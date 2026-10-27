@@ -264,37 +264,55 @@ a uma fonte que não a contém. Se os dados não forem suficientes, explica a li
 }
 
 export default async function handler(req, res) {
-  const allowedOrigin = process.env.FRONTEND_ORIGIN || "";
+  const requestOrigin = req.headers.origin || "";
 
-  const requestOrigin = req.headers.origin;
+  // Permite várias origens explícitas, separadas por vírgulas.
+  // Não uses "*" para esta API.
+  const allowedOrigins = (
+    process.env.FRONTEND_ORIGINS ||
+    process.env.FRONTEND_ORIGIN ||
+    ""
+  )
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+
+  const normalizedOrigin = requestOrigin.replace(/\/+$/, "");
+  const originAllowed = allowedOrigins.includes(normalizedOrigin);
 
   res.setHeader("Vary", "Origin");
+  res.setHeader("Cache-Control", "no-store");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Access-Control-Max-Age", "86400");
 
-  if (allowedOrigin && requestOrigin === allowedOrigin) {
-    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  // Devolve CORS apenas às origens autorizadas.
+  if (originAllowed) {
+    res.setHeader("Access-Control-Allow-Origin", normalizedOrigin);
   }
 
+  // O navegador envia OPTIONS antes do POST.
   if (req.method === "OPTIONS") {
-    if (allowedOrigin && requestOrigin !== allowedOrigin) {
-      return res.status(403).end();
+    if (!originAllowed) {
+      return res.status(403).json({
+        error: "Origem não autorizada."
+      });
     }
 
     return res.status(204).end();
   }
 
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST, OPTIONS");
-    return sendJson(res, 405, {
-      error: "Método não permitido."
+  if (!originAllowed) {
+    return res.status(403).json({
+      error: "Origem não autorizada."
     });
   }
 
-  if (allowedOrigin && requestOrigin !== allowedOrigin) {
-    return sendJson(res, 403, {
-      error: "Origem não autorizada."
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST, OPTIONS");
+
+    return sendJson(res, 405, {
+      error: "Método não permitido."
     });
   }
 
@@ -343,7 +361,8 @@ export default async function handler(req, res) {
 
     if (error.message === "APPWRITE_QUERY_FAILED") {
       return sendJson(res, 502, {
-        error: "Não foi possível consultar os conteúdos da Locapp. Verifica a configuração da base de dados."
+        error:
+          "Não foi possível consultar os conteúdos da Locapp. Verifica a configuração da base de dados."
       });
     }
 
@@ -355,12 +374,14 @@ export default async function handler(req, res) {
 
     if (error.message === "GEMINI_RATE_LIMIT") {
       return sendJson(res, 429, {
-        error: "O serviço de IA atingiu temporariamente o limite de pedidos. Tenta mais tarde."
+        error:
+          "O serviço de IA atingiu temporariamente o limite de pedidos. Tenta mais tarde."
       });
     }
 
     return sendJson(res, 503, {
-      error: "A pesquisa está temporariamente indisponível. Tenta novamente dentro de alguns instantes."
+      error:
+        "A pesquisa está temporariamente indisponível. Consulta os registos do servidor para mais detalhes."
     });
   }
 }
