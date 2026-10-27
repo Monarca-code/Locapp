@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmácias | Locapp</title>
+<link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/pages.css"><link rel="stylesheet" href="../css/responsive.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></head>
+<body>
+<header class="site-header"><a class="brand" href="../index.html"><span class="brand-pin">●</span> Locapp</a><button class="menu-toggle" aria-label="Abrir menu">☰</button><nav class="main-nav"><a href="../index.html">Início</a><a class="active" href="farmacias.html">Farmácias</a><a href="publicar-produtos.html">Publicar produtos</a><a href="pesquisa-ia.html">Pesquisa IA</a><a href="sobre.html">Sobre</a></nav><div class="header-actions"><a class="btn btn-outline" href="entrar.html">Entrar</a></div></header>
+<main class="page-wrap">
+  <div class="page-intro"><span class="eyebrow">LOCAPP / FARMÁCIAS</span><h1>Encontre uma farmácia</h1><p>Veja a zona envolvente no mapa. A localização do dispositivo só será usada se autorizar.</p><p><button class="btn btn-outline" id="locate-me" type="button">Ver a minha zona no mapa</button></p></div>
+  <form class="toolbar" id="pharmacy-search"><input id="pharmacy-query" type="search" placeholder="Nome da farmácia ou zona"><label class="check-control"><input id="open-24" type="checkbox"> Apenas 24/24</label><button class="btn btn-blue">Pesquisar</button></form>
+  <div class="map-results"><div id="pharmacy-map" class="map-panel"></div><section class="results-panel"><h2>Farmácias registadas</h2><div id="pharmacy-results" class="empty-state"><span>⌖</span><h3>Ainda sem farmácias registadas</h3><p>Não mostramos estabelecimentos fictícios. O catálogo será preenchido após o registo e validação das farmácias.</p></div></section></div>
+</main>
+<footer class="site-footer"><a class="brand" href="../index.html">Locapp</a><p>Informação sujeita a confirmação junto da farmácia.</p></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="../js/config.js"></script><script src="../js/main.js"></script><script src="../js/farmacias.js"></script>
+</body></html>
