@@ -1,4 +1,215 @@
-const DEMO_KEY="locapp_demo_products_v1";
-function demoItems(){try{return JSON.parse(localStorage.getItem(DEMO_KEY)||"[]")}catch{return[]}}
-function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-document.addEventListener("DOMContentLoaded",()=>{const form=document.getElementById("ai-search-form"),out=document.getElementById("ai-response"),input=document.getElementById("ai-query");if(!form||!out)return;const params=new URLSearchParams(location.search);if(params.has("q"))input.value=params.get("q");form.addEventListener("submit",async e=>{e.preventDefault();const q=input.value.trim().toLocaleLowerCase();if(!q)return;const items=demoItems().filter(p=>q.includes(String(p.name).toLocaleLowerCase())||String(p.name).toLocaleLowerCase().split(/\\s+/).some(t=>t.length>3&&q.includes(t))).sort((a,b)=>a.price-b.price);out.replaceChildren();const h=document.createElement("h2");h.textContent="Comparação dos produtos de teste";out.appendChild(h);const note=document.createElement("p");note.className="notice";note.textContent="Demonstração local: estes dados foram inseridos manualmente neste navegador. Não são resultados da Internet nem preços verificados.";out.appendChild(note);if(!items.length){const p=document.createElement("p");p.textContent="Não foram encontrados produtos correspondentes. Abre Publicar produtos e regista o mesmo produto em duas farmácias de teste.";out.appendChild(p)}else{items.forEach((p,i)=>{const card=document.createElement("article");card.className="demo-product";const title=document.createElement("h3");title.textContent=`${i+1}. ${p.name}`;const price=document.createElement("p");price.className="comparison-price";price.textContent=`${Number(p.price).toLocaleString("pt-PT")} Kz`;const where=document.createElement("p");where.textContent=`${p.pharmacy} — ${p.locality}`;const status=document.createElement("small");status.textContent=`Disponibilidade: ${p.availability} · teste`;card.append(title,price,where,status);out.appendChild(card)});const summary=document.createElement("p");summary.className="comparison-summary";summary.textContent=`O menor preço entre estes registos de teste é ${Number(items[0].price).toLocaleString("pt-PT")} Kz em ${items[0].pharmacy}, na localidade ${items[0].locality}.`;out.appendChild(summary)}const endpoint=window.LOCAPP_CONFIG?.aiSearchEndpoint;if(endpoint){const h2=document.createElement("h2");h2.textContent="Pesquisa Web com IA";out.appendChild(h2);const status=document.createElement("p");status.textContent="A consultar fontes públicas…";out.appendChild(status);try{const r=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:input.value.trim()})});if(!r.ok)throw Error();const data=await r.json();status.textContent=data.summary||"Sem resumo.";for(const src of (Array.isArray(data.sources)?data.sources:[])){try{const url=new URL(src.url);if(!["http:","https:"].includes(url.protocol))continue;const a=document.createElement("a");a.href=url.href;a.target="_blank";a.rel="noopener noreferrer";a.className="text-link";a.textContent=src.title||url.hostname;const p=document.createElement("p");p.appendChild(a);out.appendChild(p)}catch{}}}catch{status.textContent="A pesquisa Web com IA falhou; a comparação local continua disponível."}}})});
+
+"use strict";
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Substitui pelo domínio real do teu projeto Vercel.
+  const API_URL = "https://SEU-PROJETO.vercel.app/api/search";
+
+  const form = document.getElementById("ai-search-form");
+  const input = document.getElementById("ai-query");
+  const submitButton = document.getElementById("ai-submit");
+  const results = document.getElementById("ai-results");
+  const charCount = document.getElementById("ai-char-count");
+  const suggestions = document.querySelectorAll(".ai-suggestion");
+
+  if (!form || !input || !submitButton || !results) return;
+
+  function makeElement(tag, className, text) {
+    const element = document.createElement(tag);
+
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+
+    return element;
+  }
+
+  function renderLoading() {
+    results.replaceChildren();
+
+    const panel = makeElement("div", "ai-loading");
+    panel.appendChild(makeElement("div", "ai-loading-dot"));
+    panel.appendChild(makeElement("h2", "", "A pesquisar na Locapp…"));
+    panel.appendChild(
+      makeElement(
+        "p",
+        "",
+        "Estamos a consultar os conteúdos disponíveis e a preparar a resposta."
+      )
+    );
+
+    results.appendChild(panel);
+  }
+
+  function renderError(message) {
+    results.replaceChildren();
+
+    const panel = makeElement("div", "ai-error");
+    panel.appendChild(makeElement("h2", "", "Não foi possível concluir a pesquisa."));
+    panel.appendChild(makeElement("p", "", message));
+
+    results.appendChild(panel);
+  }
+
+  function renderAnswer(data) {
+    results.replaceChildren();
+
+    const article = makeElement("article", "ai-answer");
+    const header = makeElement("div", "ai-answer-header");
+
+    header.appendChild(makeElement("h2", "", "Resultado da pesquisa"));
+    header.appendChild(makeElement("span", "ai-answer-badge", "LOCAPP IA"));
+    article.appendChild(header);
+
+    const body = makeElement("div", "ai-answer-body");
+    const answerText = String(data.answer || "").trim();
+
+    // Texto simples com parágrafos; não executa HTML vindo da IA.
+    answerText.split(/\n{2,}/).forEach(function (paragraph) {
+      const cleanParagraph = paragraph.trim();
+
+      if (cleanParagraph) {
+        body.appendChild(makeElement("p", "", cleanParagraph));
+      }
+    });
+
+    if (!answerText) {
+      body.appendChild(
+        makeElement("p", "", "Não foi devolvida uma resposta. Tenta reformular a pergunta.")
+      );
+    }
+
+    article.appendChild(body);
+
+    const sources = Array.isArray(data.sources) ? data.sources : [];
+
+    if (sources.length > 0) {
+      const sourceSection = makeElement("section", "ai-sources");
+      sourceSection.appendChild(makeElement("h3", "", "Fontes consultadas"));
+
+      sources.forEach(function (source, index) {
+        const item = makeElement("div", "ai-source-item");
+        const title = String(source.title || "Fonte " + (index + 1));
+
+        item.appendChild(makeElement("strong", "", title));
+
+        if (source.summary) {
+          item.appendChild(makeElement("p", "", String(source.summary)));
+        }
+
+        if (source.url) {
+          try {
+            const url = new URL(source.url);
+
+            if (url.protocol === "https:" || url.protocol === "http:") {
+              const link = makeElement("a", "ai-source-link", "Consultar fonte ↗");
+              link.href = url.href;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              item.appendChild(link);
+            }
+          } catch {
+            // Ignora endereços inválidos.
+          }
+        }
+
+        if (source.updatedAt) {
+          item.appendChild(
+            makeElement(
+              "p",
+              "",
+              "Atualização registada: " + String(source.updatedAt)
+            )
+          );
+        }
+
+        sourceSection.appendChild(item);
+      });
+
+      article.appendChild(sourceSection);
+    } else {
+      const note = makeElement(
+        "p",
+        "ai-disclaimer",
+        "Não foram devolvidas fontes específicas para esta pesquisa. Confirma a informação antes de tomar decisões."
+      );
+      article.appendChild(note);
+    }
+
+    results.appendChild(article);
+  }
+
+  async function search(query) {
+    const cleanQuery = query.trim();
+
+    if (!cleanQuery) {
+      input.focus();
+      return;
+    }
+
+    if (cleanQuery.length > 1000) {
+      renderError("A pergunta ultrapassa o limite de 1.000 caracteres.");
+      return;
+    }
+
+    submitButton.disabled = true;
+    input.disabled = true;
+    submitButton.querySelector("span").textContent = "A pesquisar…";
+
+    renderLoading();
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ query: cleanQuery }),
+        cache: "no-store"
+      });
+
+      const data = await response.json().catch(function () {
+        return {};
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "O serviço de pesquisa está temporariamente indisponível."
+        );
+      }
+
+      renderAnswer(data);
+    } catch (error) {
+      console.error("Locapp pesquisa IA:", error);
+
+      renderError(
+        error.message ||
+        "Não foi possível contactar o serviço. Verifica a ligação à Internet e tenta novamente."
+      );
+    } finally {
+      submitButton.disabled = false;
+      input.disabled = false;
+      submitButton.querySelector("span").textContent = "Pesquisar";
+    }
+  }
+
+  input.addEventListener("input", function () {
+    charCount.textContent = input.value.length + "/1000";
+  });
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    search(input.value);
+  });
+
+  suggestions.forEach(function (button) {
+    button.addEventListener("click", function () {
+      input.value = button.textContent.trim();
+      charCount.textContent = input.value.length + "/1000";
+      search(input.value);
+    });
+  });
+
+  console.log("Locapp: página de pesquisa IA inicializada.");
+});

@@ -1,8 +1,112 @@
+
 <!DOCTYPE html>
-<html lang="pt"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pesquisa inteligente | Locapp</title><link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/pages.css"><link rel="stylesheet" href="../css/responsive.css"></head>
-<body>
-<header class="site-header"><a class="brand" href="../index.html"><span class="brand-pin">●</span> Locapp</a><button class="menu-toggle" aria-label="Abrir menu">☰</button><nav class="main-nav"><a href="../index.html">Início</a><a href="farmacias.html">Farmácias</a><a href="publicar-produtos.html">Publicar produtos</a><a class="active" href="pesquisa-ia.html">Pesquisa IA</a><a href="sobre.html">Sobre</a></nav><div class="header-actions"><a class="btn btn-outline" href="entrar.html">Entrar</a></div></header>
-<main class="page-wrap narrow"><div class="page-intro"><span class="eyebrow">ASSISTENTE LOCAPP</span><h1>O que pretende encontrar?</h1><p>Pergunte diretamente. Primeiro comparamos os produtos de teste guardados neste navegador; pesquisa Web com IA exige backend configurado.</p></div>
-<form id="ai-search-form" class="ai-search-box"><label for="ai-query">Pergunte à IA</label><textarea id="ai-query" rows="3" placeholder="Ex.: Onde está o Paracetamol 500 mg mais barato e em que localidade?" required></textarea><button class="btn btn-blue" type="submit">Pesquisar na Web →</button><p class="fine-print">Não introduza dados pessoais. A pesquisa IA não substitui aconselhamento médico nem confirma automaticamente preços ou stock.</p></form>
-<section id="ai-response" class="ai-response" aria-live="polite"><h2>Como funciona</h2><p>Aqui aparecem comparações dos produtos de teste e, quando o backend estiver ligado, resultados Web com fontes.</p><p class="muted">A comparação local não equivale a uma pesquisa real na Internet.</p></section>
-</main><footer class="site-footer"><a class="brand" href="../index.html">Locapp</a><p>Verifique a informação na fonte original.</p></footer><script src="../js/config.js"></script><script src="../js/main.js"></script><script src="../js/pesquisa-ia.js"></script></body></html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071b36">
+  <meta name="description" content="Pesquise conteúdos publicados, produtos e serviços na Locapp com assistência de inteligência artificial.">
+
+  <title>Pesquisa IA | Locapp</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/pesquisa-ia.css">
+  <script src="../js/pesquisa-ia.js" defer></script>
+</head>
+
+<body class="ai-search-page">
+  <header class="ai-header">
+    <a class="ai-brand" href="../index.html" aria-label="Locapp — página inicial">
+      <span class="ai-brand-mark">L</span>
+      <span>LOCAPP <small>Pesquisa inteligente</small></span>
+    </a>
+
+    <a class="ai-back-link" href="../index.html">← Página inicial</a>
+  </header>
+
+  <main class="ai-main">
+    <section class="ai-intro">
+      <span class="ai-eyebrow">PESQUISA COM INTELIGÊNCIA ARTIFICIAL</span>
+      <h1>Encontre informação.<br><span>Compreenda o essencial.</span></h1>
+      <p>
+        Pesquise conteúdos publicados, produtos e serviços.
+        As respostas utilizam os dados disponíveis na Locapp e indicam
+        as fontes encontradas.
+      </p>
+    </section>
+
+    <section class="ai-search-panel" aria-label="Pesquisa inteligente">
+      <form id="ai-search-form">
+        <label for="ai-query">O que pretende saber?</label>
+
+        <div class="ai-input-row">
+          <textarea
+            id="ai-query"
+            name="query"
+            rows="2"
+            maxlength="1000"
+            placeholder="Ex.: Que farmácias estão registadas na Aviação, Luanda?"
+            required
+          ></textarea>
+
+          <button id="ai-submit" type="submit">
+            <span>Pesquisar</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="ai-form-footer">
+          <span>Até 1.000 caracteres</span>
+          <span id="ai-char-count">0/1000</span>
+        </div>
+      </form>
+
+      <div class="ai-suggestions">
+        <p>Sugestões de pesquisa</p>
+        <div class="ai-suggestion-list">
+          <button type="button" class="ai-suggestion">
+            Que conteúdos estão publicados?
+          </button>
+          <button type="button" class="ai-suggestion">
+            Que farmácias estão registadas?
+          </button>
+          <button type="button" class="ai-suggestion">
+            Como encontrar informações sobre um produto?
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="ai-results"
+      class="ai-results"
+      aria-live="polite"
+      aria-atomic="false"
+    >
+      <div class="ai-empty-state" id="ai-empty-state">
+        <div class="ai-empty-icon" aria-hidden="true">⌕</div>
+        <h2>A sua pesquisa começa aqui</h2>
+        <p>
+          Introduza uma pergunta para consultar a informação disponível
+          na base de dados da Locapp.
+        </p>
+      </div>
+    </section>
+
+    <p class="ai-disclaimer">
+      A IA pode cometer erros. Confirme as informações importantes nas fontes
+      indicadas. A ausência de resultados não significa que um produto ou
+      serviço não exista.
+    </p>
+  </main>
+
+  <footer class="ai-footer">
+    <a href="../index.html">LOCAPP</a>
+    <span>Pesquisa baseada em dados disponíveis.</span>
+  </footer>
+</body>
+</html>
