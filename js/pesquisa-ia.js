@@ -3,7 +3,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
   // Substitui pelo domínio real do teu projeto Vercel.
-  const API_URL = "https://SEU-PROJETO.vercel.app/api/search";
+  const API_URL = "https://locapp-ruby.vercel.app/api/search";
 
   const form = document.getElementById("ai-search-form");
   const input = document.getElementById("ai-query");
