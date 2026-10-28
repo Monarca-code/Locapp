@@ -1509,3 +1509,181 @@ html { scroll-behavior: smooth; }
   .home-page .ai-modal .ai-suggestion { width: auto; max-width: 100%; text-align: left; padding: 7px 9px; font-size: 10px; }
   .home-page .ai-modal .ai-answer { padding: 14px; }
 }
+
+
+/* Correspondência visual com a referência Locapp AI PRO — sem perder o modo compacto. */
+.home-page .ai-modal {
+  --ai-blue: #55c9ff;
+  --ai-text: #f3f8ff;
+  --ai-muted: #9fb5cc;
+}
+.home-page .ai-modal-header {
+  min-height: 64px;
+  padding: 9px max(4%, calc((100% - 1120px) / 2));
+  background: linear-gradient(110deg, rgba(7,27,54,.98), rgba(10,44,82,.96), rgba(5,21,42,.98));
+  border-bottom: 1px solid rgba(99,184,255,.25);
+  box-shadow: 0 8px 28px rgba(0,0,0,.16);
+}
+.home-page .ai-modal-header .ai-brand {
+  gap: 10px;
+  font-size: 0;
+  letter-spacing: 0;
+}
+.home-page .ai-modal-header .ai-brand-image {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(34,146,245,.22);
+}
+.home-page .ai-modal-header .ai-brand > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #f7fbff;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.7px;
+}
+.home-page .ai-modal-header .ai-brand small { display: none; }
+.home-page .ai-modal .ai-pro-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid rgba(69,222,255,.65);
+  border-radius: 999px;
+  color: #7ceaff;
+  background: rgba(13,123,194,.18);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .1px;
+}
+.home-page .ai-modal-close {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  color: #d6eaff;
+  background: rgba(102,183,255,.08);
+  border-color: rgba(99,184,255,.25);
+}
+.home-page .ai-modal-main { padding-top: 27px; }
+.home-page .ai-modal-intro { margin-bottom: 18px; }
+.home-page .ai-modal-intro h1 {
+  margin: 8px 0 9px;
+  font-size: clamp(29px, 4.2vw, 43px);
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+  color: #f8fbff;
+}
+.home-page .ai-modal-intro h1 span {
+  color: transparent;
+  background: linear-gradient(95deg,#7aeaff,#45bfff 55%,#8ab8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.home-page .ai-modal-intro > p { max-width: 590px; font-size: 12px; line-height: 1.55; }
+.home-page .ai-modal .ai-eyebrow {
+  font-size: 9px;
+  letter-spacing: 1.4px;
+}
+.home-page .ai-modal .ai-search-panel {
+  padding: 17px;
+  border: 1px solid rgba(99,184,255,.28);
+  border-radius: 19px;
+  background: #f8fbff;
+  box-shadow: 0 18px 46px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.8);
+}
+.home-page .ai-modal .ai-search-panel label { color: #173453; font-size: 12px; font-weight: 700; }
+.home-page .ai-modal .ai-input-row textarea {
+  color: #142d48;
+  background: #fff;
+  border: 1px solid #d6e3ef;
+  border-radius: 12px;
+  min-height: 49px;
+  padding: 11px 13px;
+  font-size: 12px;
+}
+.home-page .ai-modal .ai-input-row textarea::placeholder { color: #7b8da2; }
+.home-page .ai-modal .ai-input-row textarea:focus {
+  border-color: #39aaf0;
+  box-shadow: 0 0 0 3px rgba(57,170,240,.13);
+}
+.home-page .ai-modal #ai-submit {
+  min-width: 112px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(120deg,#35bdf4,#1678ee);
+  box-shadow: 0 7px 18px rgba(22,120,238,.2);
+}
+.home-page .ai-modal #ai-submit:hover:not(:disabled) { background: linear-gradient(120deg,#58d2ff,#2789f6); }
+.home-page .ai-modal .ai-form-footer { color: #72859b; }
+.home-page .ai-modal .ai-suggestions { margin-top: 13px; }
+.home-page .ai-modal .ai-suggestions > p { color: #294662; font-size: 11px; font-weight: 700; }
+.home-page .ai-modal .ai-suggestion-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.home-page .ai-modal .ai-suggestion {
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #d8e5f1;
+  border-radius: 11px;
+  color: #24415e;
+  background: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.home-page .ai-modal .ai-suggestion:hover {
+  border-color: #65c8ff;
+  background: #eef9ff;
+  box-shadow: 0 5px 14px rgba(29,137,210,.08);
+  transform: translateY(-1px);
+}
+.home-page .ai-modal .ai-results { margin-top: 14px; }
+.home-page .ai-modal .ai-empty-state,
+.home-page .ai-modal .ai-loading,
+.home-page .ai-modal .ai-error {
+  padding: 17px;
+  border-radius: 15px;
+  border-color: rgba(99,184,255,.2);
+  background: linear-gradient(135deg,rgba(12,37,69,.82),rgba(7,27,54,.7));
+}
+.home-page .ai-modal .ai-empty-icon { font-size: 27px; }
+.home-page .ai-modal .ai-empty-state h2 { color: #f7fbff; font-size: 17px; }
+.home-page .ai-modal .ai-empty-state p { color: #aabbd0; font-size: 11px; }
+.home-page .ai-modal .ai-answer {
+  padding: 17px;
+  border-radius: 15px;
+  background: linear-gradient(145deg,rgba(11,38,69,.97),rgba(5,23,44,.98));
+}
+.home-page .ai-modal .ai-answer-body { font-size: 12px; line-height: 1.7; }
+.home-page .ai-modal .ai-disclaimer {
+  max-width: 700px;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9fb5cc;
+  text-align: center;
+  font-size: 9px;
+}
+@media (max-width: 600px) {
+  .home-page .ai-modal-header { min-height: 58px; padding: 8px 4%; }
+  .home-page .ai-modal-header .ai-brand-image { width: 34px; height: 34px; }
+  .home-page .ai-modal-header .ai-brand > span { font-size: 19px; gap: 7px; }
+  .home-page .ai-modal .ai-pro-badge { padding: 4px 6px; font-size: 8px; }
+  .home-page .ai-modal-main { padding-top: 21px; }
+  .home-page .ai-modal-intro { margin-bottom: 14px; }
+  .home-page .ai-modal-intro h1 { font-size: clamp(27px,7.5vw,35px); letter-spacing: -1px; }
+  .home-page .ai-modal-intro > p { font-size: 11px; }
+  .home-page .ai-modal .ai-search-panel { padding: 12px; border-radius: 15px; }
+  .home-page .ai-modal .ai-input-row { flex-direction: column; }
+  .home-page .ai-modal .ai-input-row textarea { min-height: 50px; }
+  .home-page .ai-modal #ai-submit { min-height: 40px; width: 100%; }
+  .home-page .ai-modal .ai-suggestion-list { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+  .home-page .ai-modal .ai-suggestion { min-height: 73px; padding: 7px 6px; font-size: 9px; border-radius: 10px; }
+  .home-page .ai-modal .ai-empty-state { padding: 15px 12px; }
+}
+@media (max-width: 360px) {
+  .home-page .ai-modal .ai-suggestion-list { grid-template-columns: 1fr; }
+  .home-page .ai-modal .ai-suggestion { min-height: 38px; }
+}
