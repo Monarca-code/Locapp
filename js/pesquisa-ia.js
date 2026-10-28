@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     results.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add("is-visible"));
   }
 
   function getReadableError(value) {
@@ -165,6 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
     panel.appendChild(makeElement("p", "", message));
 
     results.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add("is-visible"));
   }
 
   function renderAnswer(data) {
@@ -309,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     results.appendChild(article);
+    requestAnimationFrame(() => article.classList.add("is-visible"));
   }
 
   async function search(query) {
