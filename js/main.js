@@ -385,34 +385,72 @@ document.addEventListener("DOMContentLoaded", function () {
     return '<div class="published-image published-image-placeholder" aria-hidden="true">⌖</div>';
   }
 
+  let selectedBusinessCategory = "";
   function renderPublishedBusinesses() {
     if (!publishedGrid) return;
     publishedGrid.replaceChildren();
-    if (!publishedBusinesses.length) {
-      const empty=document.createElement("div"); empty.className="published-state";
-      empty.textContent="Ainda não existem estabelecimentos com produtos publicados para apresentar.";
-      publishedGrid.appendChild(empty); return;
+    const visibleBusinesses = selectedBusinessCategory
+      ? publishedBusinesses.filter(business => {
+          const terms = [business.type, ...business.products.map(product => product.category)]
+            .join(" ").toLocaleLowerCase("pt").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const selected = selectedBusinessCategory.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return terms.includes(selected) ||
+            (selected === "farmacia" && /farmac|pharma/.test(terms)) ||
+            (selected === "restaurante" && /restaur|comida|aliment/.test(terms)) ||
+            (selected === "hotel" && /hotel|alojamento/.test(terms)) ||
+            (selected === "reboque" && /reboque|assistencia auto/.test(terms)) ||
+            (selected === "hospital" && /hospital|clinica|saude/.test(terms)) ||
+            (selected === "atm" && /atm|multicaixa|caixa automatico/.test(terms)) ||
+            (selected === "radar" && /radar/.test(terms));
+        })
+      : publishedBusinesses;
+    if (!visibleBusinesses.length) {
+      const empty = document.createElement("div");
+      empty.className = "published-state";
+      empty.textContent = selectedBusinessCategory
+        ? "Ainda não há estabelecimentos publicados nesta categoria."
+        : "Ainda não existem estabelecimentos com produtos publicados para apresentar.";
+      publishedGrid.appendChild(empty);
+      return;
     }
-    publishedBusinesses.slice(0,12).forEach(business => {
-      const card=document.createElement("button"); card.type="button";
-      card.className="published-card published-business-card";
-      card.setAttribute("aria-label","Ver "+business.name+" no mapa");
-      const place=[business.municipality,business.province].filter(Boolean).join(", ");
-      card.innerHTML=businessImage(business)+
-        '<span class="published-card-body"><span class="published-category">'+escapeHtml(business.type)+'</span>'+
-        '<strong class="published-business-name">'+escapeHtml(business.name)+'</strong>'+
-        '<span class="published-vendor published-business-location">'+escapeHtml(place||business.address||"Localização não indicada")+'</span>'+
-        '<span class="published-business-count">'+business.products.length+(business.products.length===1?" produto publicado":" produtos publicados")+'</span>'+
+    visibleBusinesses.slice(0, 12).forEach(business => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "published-card published-business-card";
+      card.setAttribute("aria-label", "Ver " + business.name + " no mapa");
+      const place = [business.municipality, business.province].filter(Boolean).join(", ");
+      card.innerHTML = businessImage(business) +
+        '<span class="published-card-body"><span class="published-category">' + escapeHtml(business.type) + '</span>' +
+        '<strong class="published-business-name">' + escapeHtml(business.name) + '</strong>' +
+        '<span class="published-vendor published-business-location">' + escapeHtml(place || business.address || "Localização não indicada") + '</span>' +
+        '<span class="published-business-count">' + business.products.length + (business.products.length === 1 ? " produto publicado" : " produtos publicados") + '</span>' +
         '</span><span class="published-business-arrow" aria-hidden="true">↗</span>';
-      card.addEventListener("click",()=>openBusinessOnMap(business));
-      const image=card.querySelector("img");
-      if(image) image.addEventListener("error",()=>{
-        const placeholder=document.createElement("div"); placeholder.className="published-image published-image-placeholder";
-        placeholder.setAttribute("aria-hidden","true"); placeholder.textContent="⌖"; image.replaceWith(placeholder);
-      },{once:true});
+      card.addEventListener("click", () => openBusinessOnMap(business));
+      const image = card.querySelector("img");
+      if (image) image.addEventListener("error", () => {
+        const placeholder = document.createElement("div");
+        placeholder.className = "published-image published-image-placeholder";
+        placeholder.setAttribute("aria-hidden", "true");
+        placeholder.textContent = "⌖";
+        image.replaceWith(placeholder);
+      }, { once: true });
       publishedGrid.appendChild(card);
     });
   }
+
+  document.querySelectorAll(".category-card[data-category]").forEach(button => {
+    button.addEventListener("click", () => {
+      const requested = button.dataset.category || "";
+      selectedBusinessCategory = selectedBusinessCategory === requested ? "" : requested;
+      document.querySelectorAll(".category-card[data-category]").forEach(card => {
+        const active = card.dataset.category === selectedBusinessCategory;
+        card.classList.toggle("category-active", active);
+        card.setAttribute("aria-pressed", String(active));
+      });
+      renderPublishedBusinesses();
+      document.getElementById("published-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 
   function openBusinessOnMap(business) {
     if(!mapScreen||!fullscreenMapElement) return;
