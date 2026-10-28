@@ -24,12 +24,15 @@
 
 <body class="ai-search-page">
   <header class="ai-header">
-    <a class="ai-brand" href="../index.html" aria-label="Locapp — página inicial">
+    <a class="ai-brand" href="../index.html" aria-label="Locapp AI — página inicial">
       <img class="ai-brand-mark ai-brand-image" src="../favicon.svg" alt="">
-      <span>LOCAPP <small>Pesquisa inteligente</small></span>
+      <span class="ai-brand-title">Locapp AI <b class="ai-pro-badge">PRO✦</b></span>
     </a>
-
-    <a class="ai-back-link" href="../index.html">← Página inicial</a>
+    <nav class="ai-header-tools" aria-label="Atalhos da pesquisa">
+      <a href="#ai-results" class="ai-tool-button" aria-label="Ir para resultados" title="Resultados">◷</a>
+      <button type="button" class="ai-tool-button" id="ai-copy-answer" aria-label="Copiar resposta" title="Copiar resposta">▢</button>
+      <a href="../index.html" class="ai-tool-button" aria-label="Voltar à página inicial" title="Página inicial">•••</a>
+    </nav>
   </header>
 
   <main class="ai-main">
@@ -92,8 +95,8 @@
       aria-atomic="false"
     >
       <div class="ai-empty-state" id="ai-empty-state">
-        <div class="ai-empty-icon" aria-hidden="true">⌕</div>
-        <h2>A sua pesquisa começa aqui</h2>
+        <div class="ai-empty-icon" aria-hidden="true">✦</div>
+        <h2>Resultado da pesquisa</h2>
         <p>
           Introduza uma pergunta para consultar a informação disponível
           na base de dados da Locapp.
