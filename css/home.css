@@ -612,3 +612,37 @@ html { scroll-behavior: smooth; }
   .home-page .section { padding:34px 20px; }
   .home-page .section-heading { align-items:flex-start; flex-direction:column; }
 }
+
+
+/* Controlos do cabeçalho inspirados no mockup mobile */
+.home-page .header-location-pill,
+.home-page .header-notifications {
+  display:none;
+}
+@media(max-width:780px) {
+  .home-page .header-location-pill {
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    flex:0 0 auto; padding:10px 11px; border-radius:999px;
+    border:1px solid rgba(137,171,206,.3);
+    background:rgba(9,31,58,.78); color:#e7f2ff;
+    font-size:12px; text-decoration:none; white-space:nowrap;
+  }
+  .home-page .header-location-pill > span:first-child { color:#9adcf7; font-size:17px; }
+  .home-page .location-chevron { color:#9db2c9; font-size:14px; }
+  .home-page .header-notifications {
+    display:inline-grid; place-items:center; flex:0 0 42px;
+    width:42px; height:44px; border-radius:13px;
+    border:1px solid rgba(137,171,206,.3);
+    background:rgba(9,31,58,.78); color:#d8eaff;
+    text-decoration:none; font-size:20px;
+  }
+}
+@media(max-width:390px) {
+  .home-page .site-header { padding-inline:12px; gap:7px; }
+  .home-page .brand-wordmark { font-size:1.12rem; }
+  .home-page .brand-wordmark small { font-size:.54rem; }
+  .home-page .brand-pin { width:36px; height:36px; flex-basis:36px; }
+  .home-page .header-location-pill { padding:8px; font-size:11px; }
+  .home-page .header-notifications { flex-basis:36px; width:36px; height:40px; }
+  .home-page .account-cta { width:38px; min-height:40px; }
+}
