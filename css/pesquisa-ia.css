@@ -515,3 +515,40 @@
 }
 .ai-map-link:hover { transform: translateY(-1px); filter: brightness(1.08); text-decoration: none; }
 .ai-map-unavailable { margin: 0; color: var(--ai-muted); font-size: 11px; }
+
+
+/* Dados estruturados dos produtos analisados pela IA */
+.ai-product-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin: 3px 0 8px;
+  padding: 5px 8px;
+  border: 1px solid rgba(99,184,255,.28);
+  border-radius: 999px;
+  color: var(--ai-blue);
+  background: rgba(99,184,255,.08);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+.ai-product-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 8px 0 10px;
+}
+.ai-product-facts span,
+.ai-product-facts strong {
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.045);
+  color: var(--ai-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.ai-product-facts strong {
+  color: #c8f7d0;
+  background: rgba(78,190,115,.09);
+  font-weight: 800;
+}
