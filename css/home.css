@@ -1746,10 +1746,14 @@ html { scroll-behavior: smooth; }
 .home-page .category-card.future:hover { opacity: 1; }
 
 
-/* CABEÇALHO: preservar os controlos existentes e centrar apenas a marca */
+/* CABEÇALHO MOBILE — manter menu à esquerda, marca ao centro e ações à direita.
+   O botão de localização é removido; os controlos de perfil/notificações permanecem. */
 .home-page .header-location-pill,
 .home-page .header-city,
-.home-page [data-header-location] { display:none !important; }
+.home-page [data-header-location] { display: none !important; }
+
+.home-page .mobile-header-controls,
+.home-page .mobile-account-controls { display: none; }
 
 @media (max-width: 780px) {
   .home-page .site-header {
@@ -1760,84 +1764,130 @@ html { scroll-behavior: smooth; }
     flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     min-height: 66px;
     padding: 8px 12px;
-    gap: 8px;
+    gap: 0;
+    overflow: visible;
   }
 
-  /* A marca fica centrada no header sem alterar os restantes elementos. */
-  .home-page .brand {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: max-content;
-    max-width: calc(100% - 150px);
-    margin: 0;
-    gap: 5px;
-    text-align: left;
-  }
-
-  .home-page .brand-pin {
-    flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
-  }
-
-  .home-page .brand-wordmark { font-size: 1.08rem; line-height: 1.05; }
-  .home-page .brand-wordmark small { margin-top: 3px; font-size: .5rem; }
-
-  /* Menu à esquerda e perfil/notificações à direita, como no layout existente. */
   .home-page .mobile-header-controls {
     display: flex;
     position: relative;
-    z-index: 4;
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 0;
+    z-index: 5;
+    flex: 0 0 42px;
+    width: 42px;
+    min-width: 42px;
+    align-items: center;
     justify-content: flex-start;
-    margin: 0;
     order: 0;
   }
 
   .home-page .menu-toggle {
     display: inline-grid;
     place-items: center;
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
     margin: 0;
+    padding: 0;
+    border: 1px solid rgba(129,190,227,.25);
+    border-radius: 12px;
+    background: rgba(13,43,72,.82);
+    color: #eaf7ff;
+    cursor: pointer;
+  }
+
+  /* Centrar la marca respecto ao header inteiro, não ao espaço restante. */
+  .home-page .site-header > .brand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    max-width: calc(100% - 150px);
+    min-width: 0;
+    margin: 0;
+    gap: 5px;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .home-page .brand-pin {
+    flex: 0 0 29px;
+    width: 29px;
+    height: 29px;
+    margin: 0;
+  }
+
+  .home-page .brand-wordmark {
+    font-size: 1.08rem;
+    line-height: 1.05;
+  }
+
+  .home-page .brand-wordmark small {
+    display: block;
+    margin-top: 3px;
+    font-size: .49rem;
+    line-height: 1.2;
   }
 
   .home-page .mobile-account-controls {
     display: flex;
     position: relative;
-    z-index: 4;
+    z-index: 5;
     flex: 0 0 auto;
     align-items: center;
     justify-content: flex-end;
     gap: 7px;
-    margin-left: auto;
+    margin: 0 0 0 auto;
     order: 3;
   }
 
   .home-page .mobile-account-controls .header-notifications,
   .home-page .mobile-account-controls .user-account-button {
-    display: inline-grid;
-    width: 35px;
-    min-width: 35px;
-    height: 35px;
-    min-height: 35px;
-    flex: 0 0 35px;
+    display: inline-grid !important;
+    place-items: center;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex: 0 0 36px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
   }
 
-  .home-page .desktop-header-actions { display: none; }
+  .home-page .mobile-account-controls .header-notifications {
+    position: relative;
+    color: #d8eaff;
+    font-size: 1.05rem;
+  }
 
-  /* O menu abre por cima do conteúdo, sem empurrar a página para baixo. */
+  .home-page .mobile-account-controls .header-notifications i {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  .home-page .mobile-account-controls .user-account-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .home-page .desktop-header-actions { display: none !important; }
+
+  /* Dropdown sobre o conteúdo: abrir não altera a altura do header nem desloca a página. */
   .home-page .main-nav {
     display: flex !important;
     position: absolute;
@@ -1899,18 +1949,20 @@ html { scroll-behavior: smooth; }
 
   .home-page .main-nav a.active::after { display: none; }
   .home-page .main-nav a.active { box-shadow: inset 3px 0 #58d5f5; }
-  .home-page .hero { scroll-margin-top: 72px; }
 }
 
 @media (max-width: 390px) {
-  .home-page .brand { max-width: calc(100% - 130px); gap: 4px; }
-  .home-page .brand-wordmark { font-size: 1rem; }
-  .home-page .brand-wordmark small { font-size: .46rem; }
-  .home-page .brand-pin { flex-basis: 27px; width: 27px; height: 27px; }
+  .home-page .site-header { padding-inline: 9px; }
+  .home-page .mobile-header-controls { flex-basis: 36px; width: 36px; min-width: 36px; }
+  .home-page .menu-toggle { width: 34px; height: 34px; flex-basis: 34px; }
+  .home-page .site-header > .brand { max-width: calc(100% - 128px); gap: 4px; }
+  .home-page .brand-pin { flex-basis: 25px; width: 25px; height: 25px; }
+  .home-page .brand-wordmark { font-size: .98rem; }
+  .home-page .brand-wordmark small { font-size: .45rem; }
   .home-page .mobile-account-controls { gap: 4px; }
   .home-page .mobile-account-controls .header-notifications,
   .home-page .mobile-account-controls .user-account-button {
-    width: 31px; min-width: 31px; height: 31px; min-height: 31px; flex-basis: 31px;
+    width: 30px; min-width: 30px; height: 30px; min-height: 30px; flex-basis: 30px;
   }
 }
 
