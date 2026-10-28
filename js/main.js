@@ -343,120 +343,130 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // =========================================
-  // 8. CONTEÚDOS PUBLICADOS NO CATÁLOGO
+  // 8. ESTABELECIMENTOS COM CONTEÚDO PUBLICADO
   // =========================================
   const publishedGrid = document.getElementById("published-grid");
+  const refreshPublishedButton = document.getElementById("published-refresh");
+  const businessDetailsPanel = document.getElementById("business-map-details");
+  let publishedBusinesses = [];
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[char]));
 
-  function createPublishedCard(item) {
-    const card = document.createElement("article");
-    card.className = "published-card";
+  function compactBusinessList(items) {
+    const businesses = new Map();
+    items.forEach(item => {
+      const vendor = item.vendor || {};
+      const id = vendor.id || vendor.name || item.id;
+      if (!businesses.has(id)) businesses.set(id, {
+        id: vendor.id || "", name: vendor.name || "Estabelecimento registado",
+        type: vendor.type || item.category || "Negócio", address: vendor.address || "",
+        municipality: vendor.municipality || "", province: vendor.province || "",
+        phone: vendor.phone || "", whatsapp: vendor.whatsapp || "",
+        latitude: Number.isFinite(vendor.latitude) ? vendor.latitude : null,
+        longitude: Number.isFinite(vendor.longitude) ? vendor.longitude : null,
+        imageUrl: vendor.imageUrl || item.imageUrl || "", products: [], updatedAt: item.updatedAt || ""
+      });
+      const business = businesses.get(id);
+      business.products.push({
+        id: item.id, name: item.name || "Produto publicado", category: item.category || "",
+        description: item.description || "", price: Number.isFinite(item.price) ? item.price : null,
+        currency: item.currency || "Kz", imageUrl: item.imageUrl || ""
+      });
+      if (!business.imageUrl && item.imageUrl) business.imageUrl = item.imageUrl;
+      if (!business.updatedAt && item.updatedAt) business.updatedAt = item.updatedAt;
+    });
+    return [...businesses.values()].sort((a,b) => a.name.localeCompare(b.name,"pt"));
+  }
 
-    if (item.imageUrl) {
-      const image = document.createElement("img");
-      image.className = "published-image";
-      image.src = item.imageUrl;
-      image.alt = item.name || "Imagem do produto";
-      image.loading = "lazy";
-      image.referrerPolicy = "no-referrer";
-      image.onerror = function () {
-        const placeholder = document.createElement("div");
-        placeholder.className = "published-image published-image-placeholder";
-        placeholder.setAttribute("aria-hidden", "true");
-        placeholder.textContent = "◇";
-        image.replaceWith(placeholder);
-      };
-      card.appendChild(image);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "published-image published-image-placeholder";
-      placeholder.setAttribute("aria-hidden", "true");
-      placeholder.textContent = "◇";
-      card.appendChild(placeholder);
+  function businessImage(business) {
+    if (business.imageUrl) return '<img class="published-image" src="' + escapeHtml(business.imageUrl) +
+      '" alt="' + escapeHtml(business.name) + '" loading="lazy" referrerpolicy="no-referrer">';
+    return '<div class="published-image published-image-placeholder" aria-hidden="true">⌖</div>';
+  }
+
+  function renderPublishedBusinesses() {
+    if (!publishedGrid) return;
+    publishedGrid.replaceChildren();
+    if (!publishedBusinesses.length) {
+      const empty=document.createElement("div"); empty.className="published-state";
+      empty.textContent="Ainda não existem estabelecimentos com produtos publicados para apresentar.";
+      publishedGrid.appendChild(empty); return;
     }
+    publishedBusinesses.slice(0,12).forEach(business => {
+      const card=document.createElement("button"); card.type="button";
+      card.className="published-card published-business-card";
+      card.setAttribute("aria-label","Ver "+business.name+" no mapa");
+      const place=[business.municipality,business.province].filter(Boolean).join(", ");
+      card.innerHTML=businessImage(business)+
+        '<span class="published-card-body"><span class="published-category">'+escapeHtml(business.type)+'</span>'+
+        '<strong class="published-business-name">'+escapeHtml(business.name)+'</strong>'+
+        '<span class="published-vendor published-business-location">'+escapeHtml(place||business.address||"Localização não indicada")+'</span>'+
+        '<span class="published-business-count">'+business.products.length+(business.products.length===1?" produto publicado":" produtos publicados")+'</span>'+
+        '</span><span class="published-business-arrow" aria-hidden="true">↗</span>';
+      card.addEventListener("click",()=>openBusinessOnMap(business));
+      const image=card.querySelector("img");
+      if(image) image.addEventListener("error",()=>{
+        const placeholder=document.createElement("div"); placeholder.className="published-image published-image-placeholder";
+        placeholder.setAttribute("aria-hidden","true"); placeholder.textContent="⌖"; image.replaceWith(placeholder);
+      },{once:true});
+      publishedGrid.appendChild(card);
+    });
+  }
 
-    const body = document.createElement("div");
-    body.className = "published-card-body";
+  function openBusinessOnMap(business) {
+    if(!mapScreen||!fullscreenMapElement) return;
+    mapScreen.classList.add("is-active"); mapScreen.setAttribute("aria-hidden","false");
+    document.body.classList.add("map-screen-open"); document.body.style.overflow="hidden";
+    if(!fullscreenMap) fullscreenMap=createMap(fullscreenMapElement,14);
+    if(fullscreenMap) window.setTimeout(()=>{
+      fullscreenMap.invalidateSize(true);
+      const hasCoordinates=Number.isFinite(business.latitude)&&Number.isFinite(business.longitude)&&
+        Math.abs(business.latitude)<=90&&Math.abs(business.longitude)<=180&&!(business.latitude===0&&business.longitude===0);
+      if(hasCoordinates) {
+        fullscreenMap.setView([business.latitude,business.longitude],16);
+        L.marker([business.latitude,business.longitude]).addTo(fullscreenMap)
+          .bindPopup("<strong>"+escapeHtml(business.name)+"</strong><br>"+escapeHtml(business.address||"")).openPopup();
+      } else fullscreenMap.setView(initialPosition,13);
+    },120);
 
-    if (item.category) {
-      const category = document.createElement("span");
-      category.className = "published-category";
-      category.textContent = item.category;
-      body.appendChild(category);
+    if(businessDetailsPanel) {
+      const address=[business.address,business.municipality,business.province].filter(Boolean).join(", ");
+      const phone=business.phone?'<div class="business-detail-row"><span>Telefone</span><a href="tel:'+escapeHtml(business.phone.replace(/[^+\d]/g,""))+'">'+escapeHtml(business.phone)+'</a></div>':"";
+      const digits=String(business.whatsapp||"").replace(/\D/g,"");
+      const whatsapp=digits?'<div class="business-detail-row"><span>WhatsApp</span><a target="_blank" rel="noopener noreferrer" href="https://wa.me/'+escapeHtml(digits)+'">Contactar</a></div>':"";
+      const coords=Number.isFinite(business.latitude)&&Number.isFinite(business.longitude)?
+        '<div class="business-detail-row"><span>Coordenadas</span><span>'+business.latitude.toFixed(5)+', '+business.longitude.toFixed(5)+'</span></div>':"";
+      const products=business.products.slice(0,5).map(product=>'<li><span>'+escapeHtml(product.name)+'</span>'+
+        (product.price!==null?'<strong>'+new Intl.NumberFormat("pt-AO",{maximumFractionDigits:2}).format(product.price)+' '+escapeHtml(product.currency)+'</strong>':"")+'</li>').join("");
+      businessDetailsPanel.hidden=false;
+      businessDetailsPanel.innerHTML='<button type="button" class="business-details-close" aria-label="Fechar detalhes">✕</button>'+
+        '<div class="business-details-kicker">ESTABELECIMENTO PUBLICADO</div><h2>'+escapeHtml(business.name)+'</h2>'+
+        '<p class="business-details-type">'+escapeHtml(business.type)+'</p>'+
+        '<div class="business-detail-row"><span>Morada</span><strong>'+escapeHtml(address||"Não indicada na base de dados")+'</strong></div>'+
+        phone+whatsapp+coords+'<div class="business-products-heading">Produtos publicados</div>'+
+        '<ul class="business-products-list">'+(products||'<li>Sem produtos detalhados.</li>')+'</ul>'+
+        (business.updatedAt?'<p class="business-details-updated">Dados atualizados: '+escapeHtml(new Date(business.updatedAt).toLocaleDateString("pt-AO"))+'</p>':"");
+      businessDetailsPanel.querySelector(".business-details-close").addEventListener("click",()=>{businessDetailsPanel.hidden=true;});
     }
-
-    const title = document.createElement("h3");
-    title.textContent = item.name || "Produto publicado";
-    body.appendChild(title);
-
-    if (item.description) {
-      const description = document.createElement("p");
-      description.className = "published-description";
-      description.textContent = item.description;
-      body.appendChild(description);
-    }
-
-    if (Number.isFinite(item.price)) {
-      const price = document.createElement("div");
-      price.className = "published-price";
-      price.textContent = new Intl.NumberFormat("pt-AO", {
-        maximumFractionDigits: 2
-      }).format(item.price) + " " + (item.currency || "Kz");
-      body.appendChild(price);
-    } else {
-      const noPrice = document.createElement("div");
-      noPrice.className = "published-vendor";
-      noPrice.textContent = "Preço não indicado";
-      body.appendChild(noPrice);
-    }
-
-    const vendor = document.createElement("div");
-    vendor.className = "published-vendor";
-    vendor.textContent = item.vendor && item.vendor.name ? item.vendor.name : "Vendedor registado";
-    body.appendChild(vendor);
-
-    card.appendChild(body);
-    return card;
   }
 
   async function loadPublishedContent() {
-    if (!publishedGrid) return;
-
+    if(!publishedGrid) return;
+    if(refreshPublishedButton) refreshPublishedButton.disabled=true;
+    publishedGrid.innerHTML='<div class="published-state"><span class="published-loader" aria-hidden="true"></span><span>A carregar estabelecimentos publicados…</span></div>';
     try {
-      const response = await fetch("/api/catalog?sort=name", {
-        method: "GET",
-        headers: { "Accept": "application/json" },
-        cache: "no-store"
-      });
-      const result = await response.json().catch(function () { return {}; });
-
-      if (!response.ok) {
-        throw new Error(result.error || "Não foi possível carregar o catálogo.");
-      }
-
-      const items = Array.isArray(result.items) ? result.items : [];
-      publishedGrid.replaceChildren();
-
-      if (!items.length) {
-        const empty = document.createElement("div");
-        empty.className = "published-state";
-        empty.textContent = "Ainda não existem produtos publicados para apresentar. Quando um negócio publicar conteúdo, ele aparecerá aqui.";
-        publishedGrid.appendChild(empty);
-        return;
-      }
-
-      items.slice(0, 8).forEach(function (item) {
-        publishedGrid.appendChild(createPublishedCard(item));
-      });
-    } catch (error) {
-      console.error("Locapp: erro ao carregar conteúdos publicados:", error);
-      publishedGrid.replaceChildren();
-      const state = document.createElement("div");
-      state.className = "published-state";
-      state.textContent = "Não foi possível carregar os conteúdos publicados neste momento.";
-      publishedGrid.appendChild(state);
-    }
+      const response=await fetch("/api/catalog?sort=name",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(result.error||"Não foi possível carregar o catálogo.");
+      publishedBusinesses=compactBusinessList(Array.isArray(result.items)?result.items:[]);
+      renderPublishedBusinesses();
+    } catch(error) {
+      console.error("Locapp: erro ao carregar estabelecimentos:",error);
+      publishedGrid.innerHTML='<div class="published-state">Não foi possível carregar os estabelecimentos. Tenta novamente.</div>';
+    } finally { if(refreshPublishedButton) refreshPublishedButton.disabled=false; }
   }
-
+  if(refreshPublishedButton) refreshPublishedButton.addEventListener("click",loadPublishedContent);
   loadPublishedContent();
 
   console.log("Locapp: aplicação inicializada.");
