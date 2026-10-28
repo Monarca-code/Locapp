@@ -92,6 +92,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         item.appendChild(makeElement("strong", "", title));
 
+        if (source.sourceType === "produto") {
+          item.appendChild(makeElement("span", "ai-product-badge", "PRODUTO DO CATÁLOGO"));
+          const facts = makeElement("div", "ai-product-facts");
+          if (source.brand) facts.appendChild(makeElement("span", "", "Marca: " + source.brand));
+          if (source.price !== null && source.price !== undefined) {
+            const priceText = new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 2 }).format(Number(source.price)) + " " + String(source.currency || "Kz");
+            facts.appendChild(makeElement("strong", "", "Preço registado: " + priceText));
+          } else {
+            facts.appendChild(makeElement("span", "", "Preço não indicado"));
+          }
+          if (source.category) facts.appendChild(makeElement("span", "", "Categoria: " + source.category));
+          if (source.stockQuantity !== null && source.stockQuantity !== undefined) {
+            facts.appendChild(makeElement("span", "", "Quantidade registada: " + source.stockQuantity));
+          }
+          if (source.vendorStatus) facts.appendChild(makeElement("span", "", "Estado do vendedor: " + source.vendorStatus));
+          item.appendChild(facts);
+        }
+
         if (source.summary) {
           item.appendChild(makeElement("p", "", String(source.summary)));
         }
