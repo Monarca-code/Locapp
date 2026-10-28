@@ -14,5 +14,5 @@ window.LOCAPP_CONFIG = {
   },
   // URL HTTPS de uma função backend que pesquisa fontes públicas e usa IA.
   // Só preencher depois de publicar e proteger a função no servidor.
-  aiSearchEndpoint: ""
+  aiSearchEndpoint: "https://locapp-ruby.vercel.app/api/search"
 };
