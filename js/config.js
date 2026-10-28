@@ -10,7 +10,8 @@ window.LOCAPP_CONFIG = {
     pharmacies: "pharmacies",
     products: "products",
     offers: "offers",
-    priceAlerts: "price_alerts"
+    priceAlerts: "price_alerts",
+    contents: "6ae0baa4001090ac39cb"
   },
   // URL HTTPS de uma função backend que pesquisa fontes públicas e usa IA.
   // Só preencher depois de publicar e proteger a função no servidor.
