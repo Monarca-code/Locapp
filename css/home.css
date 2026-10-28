@@ -1185,3 +1185,73 @@ html { scroll-behavior: smooth; }
   .home-page .categories-section .category-card { min-height: 78px; }
   .home-page .published-subtitle { max-width: 235px; font-size: .74rem; }
 }
+
+
+/* Pesquisa IA em painel modal — permanece na página inicial, como o mapa. */
+.home-page .ai-modal {
+  position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center;
+  padding: clamp(8px, 2.5vw, 28px); opacity: 0; visibility: hidden;
+  pointer-events: none; transition: opacity .24s ease, visibility .24s ease;
+  background: transparent; min-height: 0;
+}
+.home-page .ai-modal.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
+.home-page .ai-modal-backdrop {
+  position: absolute; inset: 0; background: rgba(1, 9, 20, .78);
+  backdrop-filter: blur(9px);
+}
+.home-page .ai-modal-dialog {
+  position: relative; z-index: 1; width: min(860px, 100%); max-height: min(92svh, 900px);
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 24px;
+  border: 1px solid rgba(99,184,255,.28); background: #071b36;
+  box-shadow: 0 28px 100px rgba(0,0,0,.48);
+  transform: translateY(16px) scale(.985); transition: transform .24s ease;
+}
+.home-page .ai-modal.is-active .ai-modal-dialog { transform: translateY(0) scale(1); }
+.home-page .ai-modal-header {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 19px; border-bottom: 1px solid rgba(150,190,230,.2);
+  background: rgba(12,37,69,.96);
+}
+.home-page .ai-modal-header .ai-brand { color: #f1e7d5; text-decoration: none; gap: 10px; }
+.home-page .ai-modal-header .ai-brand small { display:block; color:#aabbd0; font-size:10px; letter-spacing:0; font-weight:400; margin-top:3px; }
+.home-page .ai-modal-header .ai-brand-image { width:36px; height:36px; padding:5px; border-radius:11px; background:#63b8ff; }
+.home-page .ai-pro-badge { color:#071b36; background:#63b8ff; border-radius:6px; padding:3px 5px; font-size:9px; letter-spacing:.5px; }
+.home-page .ai-modal-close {
+  width:38px; height:38px; display:grid; place-items:center; border-radius:12px;
+  border:1px solid rgba(150,190,230,.24); background:rgba(255,255,255,.05);
+  color:#f1e7d5; font-size:19px; cursor:pointer;
+}
+.home-page .ai-modal-main { width:100%; max-width:none; margin:0; padding:22px clamp(14px,3vw,28px) 20px; overflow:auto; }
+.home-page .ai-modal-intro { margin:0 auto 18px; }
+.home-page .ai-modal-intro h1 { margin:8px 0; font-size:clamp(24px,3vw,34px); letter-spacing:-1px; }
+.home-page .ai-modal-intro > p { font-size:12px; line-height:1.55; }
+.home-page .ai-modal .ai-search-panel { padding:16px; border-radius:16px; }
+.home-page .ai-modal .ai-search-panel label { margin-bottom:8px; font-size:12px; }
+.home-page .ai-modal .ai-input-row { gap:8px; }
+.home-page .ai-modal .ai-input-row textarea { min-height:54px; max-height:130px; padding:12px; font-size:13px; }
+.home-page .ai-modal #ai-submit { min-width:110px; font-size:12px; }
+.home-page .ai-modal .ai-suggestions { margin-top:13px; }
+.home-page .ai-modal .ai-suggestions > p { margin-bottom:8px; }
+.home-page .ai-modal .ai-suggestion-list { gap:7px; }
+.home-page .ai-modal .ai-suggestion { padding:8px 10px; font-size:11px; }
+.home-page .ai-modal .ai-results { margin-top:14px; }
+.home-page .ai-modal .ai-empty-state, .home-page .ai-modal .ai-loading, .home-page .ai-modal .ai-error { padding:18px; }
+.home-page .ai-modal .ai-answer { padding:16px; }
+.home-page .ai-modal .ai-answer-body { font-size:13px; line-height:1.65; }
+.home-page .ai-modal .ai-disclaimer { margin:12px auto 0; font-size:10px; }
+.home-page.ai-modal-open { overflow:hidden; }
+@media (max-width:600px) {
+  .home-page .ai-modal { padding:0; align-items:end; }
+  .home-page .ai-modal-dialog { width:100%; max-height:94svh; border-radius:22px 22px 0 0; border-bottom:0; }
+  .home-page .ai-modal-header { padding:11px 14px; }
+  .home-page .ai-modal-main { padding:16px 13px 18px; }
+  .home-page .ai-modal-intro { margin-bottom:13px; }
+  .home-page .ai-modal-intro h1 { font-size:25px; }
+  .home-page .ai-modal .ai-input-row { flex-direction:column; }
+  .home-page .ai-modal #ai-submit { min-height:44px; width:100%; }
+  .home-page .ai-modal .ai-suggestion-list { display:grid; grid-template-columns:1fr; }
+  .home-page .ai-modal .ai-suggestion { width:100%; text-align:left; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page .ai-modal, .home-page .ai-modal-dialog { transition:none; }
+}
