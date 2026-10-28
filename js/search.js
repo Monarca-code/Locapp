@@ -281,7 +281,7 @@ Devolve apenas a resposta final dirigida ao utilizador.
             maxOutputTokens: 1200
           }
         }),
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(12000),
         cache: "no-store"
       });
 
@@ -399,25 +399,35 @@ export default async function handler(req, res) {
   }
 
   try {
+    
     const documents = await loadPublishedDocuments();
     const relevantDocuments = rankDocuments(documents, question);
 
-    if (relevantDocuments.length === 0) {
+    // Sem documentos publicados, não inventar uma resposta.
+    if (documents.length === 0) {
       return sendJson(res, 200, {
         answer:
-          "Não encontrei documentos publicados relevantes para esta pergunta na base de dados consultada. Isso não significa que a informação ou o serviço não exista. Tenta usar outros termos ou consulta mais tarde.",
+          "Ainda não existem documentos publicados disponíveis para responder a esta pergunta. Tenta novamente mais tarde ou consulta a equipa responsável pela Locapp.",
         sources: [],
         resultsFound: 0
       });
     }
 
-    const answer = await askGemini(question, relevantDocuments);
+    // Se a pesquisa literal não encontrar correspondências, envia
+    // alguns documentos publicados para o Gemini verificar se existe
+    // informação relacionada. O prompt obriga-o a reconhecer lacunas.
+    const documentsForAI = relevantDocuments.length > 0
+      ? relevantDocuments
+      : documents.slice(0, 5);
+
+    const answer = await askGemini(question, documentsForAI);
 
     return sendJson(res, 200, {
       answer,
-      sources: relevantDocuments.map(getSource),
+      sources: documentsForAI.map(getSource),
       resultsFound: relevantDocuments.length
     });
+
   } catch (error) {
     console.error("Locapp search error:", error.message);
 
