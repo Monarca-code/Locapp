@@ -108,10 +108,10 @@
     <section class="section published-section" aria-labelledby="published-title">
       <div class="section-heading">
         <div>
-          <h2 id="published-title">Conteúdos publicados</h2>
-          <p class="published-subtitle">Produtos e informações partilhados por negócios registados na Locapp.</p>
+          <h2 id="published-title">Estabelecimentos perto de si</h2>
+          <p class="published-subtitle">Negócios com produtos publicados na Locapp. Toque num cartão para ver a localização e os dados registados.</p>
         </div>
-        <a class="published-see-all" href="pages/farmacias.html">Explorar <span aria-hidden="true">→</span></a>
+        <button class="published-see-all" id="published-refresh" type="button">Atualizar <span aria-hidden="true">↻</span></button>
       </div>
       <div id="published-grid" class="published-grid" aria-live="polite">
         <div class="published-state"><span class="published-loader" aria-hidden="true"></span><span>A carregar conteúdos publicados…</span></div>
@@ -155,6 +155,7 @@
       </button>
     </header>
     <div id="fullscreen-map" class="fullscreen-map"></div>
+    <aside id="business-map-details" class="business-map-details" aria-live="polite" hidden></aside>
     <div class="map-screen-controls">
       <button id="map-locate-me" type="button">⌖ Usar a minha localização</button>
       <p>Explora as ruas e localidades no mapa.</p>
