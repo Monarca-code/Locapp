@@ -268,17 +268,63 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const destination = new URL(
-        "pages/pesquisa-ia.html",
-        window.location.href
-      );
-
-      destination.searchParams.set("q", query);
-      window.location.href = destination.href;
+      openAiModal(query);
     });
   }
 
   // =========================================
+
+  // =========================================
+  // 9. PESQUISA IA EM JANELA SOBRE A PÁGINA
+  // =========================================
+  const aiModal = document.getElementById("locapp-ai");
+  const aiInput = document.getElementById("ai-query");
+  const aiForm = document.getElementById("ai-search-form");
+  let aiLastFocus = null;
+
+  function openAiModal(query) {
+    if (!aiModal) {
+      window.location.href = "pages/pesquisa-ia.html" + (query ? "?q=" + encodeURIComponent(query) : "");
+      return;
+    }
+    aiLastFocus = document.activeElement;
+    aiModal.classList.add("is-active");
+    aiModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("ai-modal-open");
+    document.body.style.overflow = "hidden";
+    if (query && aiInput) {
+      aiInput.value = query;
+      aiInput.dispatchEvent(new Event("input", { bubbles: true }));
+      if (aiForm) aiForm.requestSubmit();
+    } else if (aiInput) {
+      window.setTimeout(() => aiInput.focus({ preventScroll: true }), 180);
+    }
+  }
+
+  function closeAiModal() {
+    if (!aiModal) return;
+    aiModal.classList.remove("is-active");
+    aiModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("ai-modal-open");
+    document.body.style.overflow = "";
+    if (aiLastFocus && typeof aiLastFocus.focus === "function") {
+      aiLastFocus.focus({ preventScroll: true });
+    }
+  }
+
+  document.querySelectorAll("[data-open-ai]").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      openAiModal("");
+    });
+  });
+  document.querySelectorAll("[data-close-ai]").forEach(control => {
+    control.addEventListener("click", closeAiModal);
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && aiModal && aiModal.classList.contains("is-active")) closeAiModal();
+  });
+
   // 7. AJUSTAR OS MAPAS AO REDIMENSIONAR
   // =========================================
   window.addEventListener("resize", function () {
