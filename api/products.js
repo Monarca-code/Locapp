@@ -7,13 +7,15 @@ function allowedOrigin(req, res) {
   const origin = clean(req.headers.origin, 500).replace(/\/+$/, "");
   const allowed = (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || "")
     .split(",").map(v => v.trim().replace(/\/+$/, "")).filter(Boolean);
+  const host = clean(req.headers.host, 300).toLowerCase();
+  const sameDeploymentOrigin = host === "locapp-ruby.vercel.app" && (!origin || origin === "https://locapp-ruby.vercel.app");
   res.setHeader("Vary", "Origin");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Appwrite-JWT");
   res.setHeader("Access-Control-Max-Age", "86400");
-  if (allowed.includes(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
-  return allowed.includes(origin);
+  if ((allowed.includes(origin) || sameDeploymentOrigin) && origin) res.setHeader("Access-Control-Allow-Origin", origin);
+  return allowed.includes(origin) || sameDeploymentOrigin;
 }
 
 function config() {
