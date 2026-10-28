@@ -77,11 +77,22 @@ function getSource(doc) {
     // O documento pode não ter uma ligação pública.
   }
 
+  const latitudeValue = doc.latitude ?? doc.lat ?? doc.coordinates_lat;
+  const longitudeValue = doc.longitude ?? doc.lng ?? doc.coordinates_lng;
+  const latitude = latitudeValue !== undefined && latitudeValue !== null && latitudeValue !== ""
+    ? Number(latitudeValue) : null;
+  const longitude = longitudeValue !== undefined && longitudeValue !== null && longitudeValue !== ""
+    ? Number(longitudeValue) : null;
+
   return {
     id: String(doc.$id || ""),
     title: String(doc.title || "Conteúdo publicado"),
     summary: String(doc.summary || "").slice(0, 500),
-    location: String(doc.location || "").trim() || null,
+    location: String(doc.location || doc.address || "").trim() || null,
+    store: String(doc.store_name || doc.store || doc.shop_name || "").trim() || null,
+    address: String(doc.address || doc.location || "").trim() || null,
+    latitude: Number.isFinite(latitude) ? latitude : null,
+    longitude: Number.isFinite(longitude) ? longitude : null,
     url: safeUrl,
     updatedAt: doc.updated_at
       ? String(doc.updated_at)
