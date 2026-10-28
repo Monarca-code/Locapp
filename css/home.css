@@ -1746,7 +1746,7 @@ html { scroll-behavior: smooth; }
 .home-page .category-card.future:hover { opacity: 1; }
 
 
-/* HEADER FINAL — marca centrada e menu sobreposto sem deslocar a página */
+/* CABEÇALHO: preservar os controlos existentes e centrar apenas a marca */
 .home-page .header-location-pill,
 .home-page .header-city,
 .home-page [data-header-location] { display:none !important; }
@@ -1758,13 +1758,14 @@ html { scroll-behavior: smooth; }
     z-index: 1200;
     display: flex;
     flex-wrap: nowrap;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
     min-height: 66px;
-    padding: 8px 14px;
-    gap: 0;
-    isolation: isolate;
+    padding: 8px 12px;
+    gap: 8px;
   }
+
+  /* A marca fica centrada no header sem alterar os restantes elementos. */
   .home-page .brand {
     position: absolute;
     left: 50%;
@@ -1774,55 +1775,69 @@ html { scroll-behavior: smooth; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     width: max-content;
-    max-width: calc(100% - 112px);
+    max-width: calc(100% - 150px);
     margin: 0;
-    order: initial;
+    gap: 5px;
     text-align: left;
   }
+
   .home-page .brand-pin {
-    flex: 0 0 27px;
-    width: 27px;
-    height: 27px;
-    margin-right: 2px;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
   }
+
   .home-page .brand-wordmark { font-size: 1.08rem; line-height: 1.05; }
-  .home-page .brand-wordmark small { font-size: .5rem; margin-top: 3px; }
+  .home-page .brand-wordmark small { margin-top: 3px; font-size: .5rem; }
+
+  /* Menu à esquerda e perfil/notificações à direita, como no layout existente. */
   .home-page .mobile-header-controls {
     display: flex;
     position: relative;
     z-index: 4;
-    order: initial;
-    width: 100%;
+    flex: 0 0 auto;
+    width: auto;
     min-width: 0;
-    justify-content: flex-end;
-    align-items: center;
+    justify-content: flex-start;
     margin: 0;
-    pointer-events: none;
+    order: 0;
   }
+
   .home-page .menu-toggle {
     display: inline-grid;
     place-items: center;
-    pointer-events: auto;
-    order: initial;
     width: 42px;
     height: 42px;
     flex: 0 0 42px;
     margin: 0;
-    border: 1px solid rgba(129,190,227,.24);
-    border-radius: 12px;
-    background: rgba(13,43,72,.92);
-    color: #eaf7ff;
-    font-size: 1.15rem;
-    transition: background .22s ease, border-color .22s ease, transform .22s ease;
   }
-  .home-page .menu-toggle[aria-expanded="true"] {
-    background: rgba(21,83,118,.98);
-    border-color: rgba(88,213,245,.7);
+
+  .home-page .mobile-account-controls {
+    display: flex;
+    position: relative;
+    z-index: 4;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    margin-left: auto;
+    order: 3;
   }
-  .home-page .mobile-account-controls,
-  .home-page .desktop-header-actions { display: none !important; }
+
+  .home-page .mobile-account-controls .header-notifications,
+  .home-page .mobile-account-controls .user-account-button {
+    display: inline-grid;
+    width: 35px;
+    min-width: 35px;
+    height: 35px;
+    min-height: 35px;
+    flex: 0 0 35px;
+  }
+
+  .home-page .desktop-header-actions { display: none; }
+
+  /* O menu abre por cima do conteúdo, sem empurrar a página para baixo. */
   .home-page .main-nav {
     display: flex !important;
     position: absolute;
@@ -1847,10 +1862,11 @@ html { scroll-behavior: smooth; }
     box-shadow: 0 18px 48px rgba(0,0,0,.42);
     backdrop-filter: blur(20px);
     transform: translateY(-8px) scale(.985);
-    transform-origin: top right;
+    transform-origin: top left;
     transition: max-height .3s ease, opacity .22s ease, transform .3s ease,
       padding .3s ease, border-color .22s ease, visibility .3s;
   }
+
   .home-page .main-nav.open {
     max-height: min(360px, calc(100dvh - 90px));
     overflow-y: auto;
@@ -1861,6 +1877,7 @@ html { scroll-behavior: smooth; }
     border-color: rgba(88,213,245,.2);
     transform: translateY(0) scale(1);
   }
+
   .home-page .main-nav a {
     display: flex;
     align-items: center;
@@ -1873,15 +1890,30 @@ html { scroll-behavior: smooth; }
     font-size: .9rem;
     line-height: 1.35;
   }
+
   .home-page .main-nav a:hover,
   .home-page .main-nav a.active {
     color: #f5fbff;
     background: rgba(88,213,245,.09);
   }
+
   .home-page .main-nav a.active::after { display: none; }
   .home-page .main-nav a.active { box-shadow: inset 3px 0 #58d5f5; }
   .home-page .hero { scroll-margin-top: 72px; }
 }
+
+@media (max-width: 390px) {
+  .home-page .brand { max-width: calc(100% - 130px); gap: 4px; }
+  .home-page .brand-wordmark { font-size: 1rem; }
+  .home-page .brand-wordmark small { font-size: .46rem; }
+  .home-page .brand-pin { flex-basis: 27px; width: 27px; height: 27px; }
+  .home-page .mobile-account-controls { gap: 4px; }
+  .home-page .mobile-account-controls .header-notifications,
+  .home-page .mobile-account-controls .user-account-button {
+    width: 31px; min-width: 31px; height: 31px; min-height: 31px; flex-basis: 31px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-page .main-nav,
   .home-page .menu-toggle { transition: none !important; }
