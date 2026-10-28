@@ -144,7 +144,9 @@ export default async function handler(req, res) {
           province: clean(vendor.province, 100),
           latitude: Number.isFinite(Number(vendor.latitude)) ? Number(vendor.latitude) : null,
           longitude: Number.isFinite(Number(vendor.longitude)) ? Number(vendor.longitude) : null,
-          verificationStatus: clean(vendor.verification_status, 50)
+          verificationStatus: clean(vendor.verification_status, 50),
+          status: clean(vendor.status || vendor.publication_status, 50),
+          imageUrl: safeImage(vendor.image_url || vendor.logo_url || vendor.image || vendor.photo_url)
         }
       };
     });
