@@ -106,6 +106,25 @@ document.addEventListener("DOMContentLoaded", function () {
     return element;
   }
 
+  // Formata negrito/itálico simples sem interpretar HTML gerado pela IA.
+  function appendFormattedText(container, text) {
+    const pattern = /\\*\\*(.+?)\\*\\*|\\*(.+?)\\*/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      const formatted = document.createElement(match[1] ? "strong" : "em");
+      formatted.textContent = match[1] || match[2];
+      container.appendChild(formatted);
+      lastIndex = pattern.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      container.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+  }
+
   function renderLoading() {
     results.replaceChildren();
 
@@ -166,7 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const cleanParagraph = paragraph.trim();
 
       if (cleanParagraph) {
-        body.appendChild(makeElement("p", "", cleanParagraph));
+        const paragraphElement = makeElement("p");
+        appendFormattedText(paragraphElement, cleanParagraph);
+        body.appendChild(paragraphElement);
       }
     });
 
