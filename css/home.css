@@ -747,3 +747,294 @@ html { scroll-behavior: smooth; }
   .home-page .hero-content > p:not(.small-note) { margin-bottom:18px; }
   .home-page .small-note { margin-top:13px!important; }
 }
+
+
+/* REF MATCH — cabeçalho compacto, perfil circular e indicadores sob a pesquisa */
+.home-page .site-header {
+  min-height: 68px;
+  height: auto;
+  padding: 10px clamp(14px, 4vw, 52px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.home-page .mobile-header-controls,
+.home-page .mobile-account-controls { display: none; }
+.home-page .desktop-header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: auto;
+  gap: 10px;
+}
+.home-page .header-notifications {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(142,190,225,.2);
+  border-radius: 50%;
+  color: #dceeff;
+  background: rgba(13,43,72,.72);
+  font-size: 1.2rem;
+}
+.home-page .header-notifications i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  top: 8px;
+  right: 8px;
+  border: 1px solid #06172b;
+  border-radius: 50%;
+  background: #58d5f5;
+}
+.home-page .user-account-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(88,213,245,.52);
+  border-radius: 50%;
+  color: #e9faff;
+  background: linear-gradient(145deg,#176a96,#102f50);
+  box-shadow: 0 5px 18px rgba(24,151,201,.16);
+}
+.home-page .user-account-icon {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.home-page .hero {
+  min-height: min(650px, calc(100svh - 68px));
+  padding-top: clamp(42px, 5.2vw, 72px);
+  padding-bottom: clamp(42px, 5.2vw, 72px);
+}
+.home-page .hero-content { max-width: 720px; }
+.home-page .hero .eyebrow { margin-bottom: 15px; }
+.home-page .hero h1 {
+  font-size: clamp(2.7rem, 5.3vw, 4.9rem);
+  line-height: 1.02;
+  margin-bottom: 17px;
+}
+.home-page .hero-content > p:not(.small-note) {
+  max-width: 570px;
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
+.home-page .search-bar {
+  max-width: 690px;
+  padding: 6px;
+  border-radius: 16px;
+}
+.home-page .search-bar input { padding: 12px 14px; }
+.home-page .search-bar .btn { min-height: 48px; }
+.home-page .trust-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.home-page .trust-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid rgba(129,190,227,.22);
+  border-radius: 999px;
+  color: #c4d7e9;
+  background: rgba(10,39,66,.58);
+  font-size: .76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.home-page .trust-pill-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  color: #72e1fb;
+  background: rgba(88,213,245,.12);
+  font-size: .72rem;
+}
+.home-page .small-note { display: none; }
+.home-page .hero-actions { display: flex !important; }
+@media (max-width: 780px) {
+  .home-page .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 62px;
+    padding: 9px 13px;
+    gap: 8px;
+  }
+  .home-page .mobile-header-controls {
+    display: flex;
+    order: 1;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+  .home-page .brand {
+    order: 2;
+    gap: 5px;
+    margin-right: auto;
+  }
+  .home-page .brand-pin {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    border-radius: 11px;
+  }
+  .home-page .brand-pin::before { width: 10px; height: 10px; border-width: 3px; top: 5px; }
+  .home-page .brand-pin::after { width: 9px; height: 9px; bottom: 4px; }
+  .home-page .brand-wordmark { font-size: 1.15rem; }
+  .home-page .brand-wordmark small { margin-top: 4px; font-size: .53rem; }
+  .home-page .menu-toggle {
+    display: inline-grid;
+    place-items: center;
+    order: 1;
+    width: 35px;
+    height: 35px;
+    flex: 0 0 35px;
+    padding: 0;
+    border: 1px solid rgba(129,190,227,.23);
+    border-radius: 11px;
+    background: rgba(13,43,72,.72);
+    color: #eaf7ff;
+    font-size: 1.15rem;
+  }
+  .home-page .header-location-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 8px;
+    border: 1px solid rgba(129,190,227,.18);
+    border-radius: 10px;
+    color: #cce0f2;
+    background: rgba(13,43,72,.55);
+    font-size: .72rem;
+    white-space: nowrap;
+  }
+  .home-page .mobile-account-controls {
+    display: flex;
+    order: 3;
+    align-items: center;
+    gap: 7px;
+  }
+  .home-page .mobile-account-controls .header-notifications {
+    width: 35px;
+    height: 35px;
+    flex-basis: 35px;
+    font-size: 1rem;
+  }
+  .home-page .mobile-account-controls .header-notifications i { top: 5px; right: 5px; }
+  .home-page .mobile-account-controls .user-account-button {
+    width: 35px;
+    min-width: 35px;
+    height: 35px;
+    min-height: 35px;
+  }
+  .home-page .mobile-account-controls .user-account-icon { width: 20px; height: 20px; }
+  .home-page .desktop-header-actions { display: none; }
+  .home-page .main-nav {
+    display: none;
+    order: 4;
+    width: 100%;
+    margin: 2px 0 0;
+    padding: 8px 0 2px;
+  }
+  .home-page .main-nav.open { display: flex; flex-direction: column; }
+  .home-page .main-nav a { min-height: 38px; }
+  .home-page .hero {
+    min-height: 0;
+    padding: 40px 17px 36px;
+  }
+  .home-page .hero h1 {
+    font-size: clamp(2.25rem, 9.6vw, 3.25rem);
+    line-height: 1.04;
+    margin-bottom: 15px;
+  }
+  .home-page .hero .eyebrow {
+    font-size: .6rem;
+    letter-spacing: .08em;
+    margin-bottom: 13px;
+    padding: 7px 10px;
+  }
+  .home-page .hero-content > p:not(.small-note) {
+    font-size: .91rem;
+    line-height: 1.55;
+    margin-bottom: 17px;
+  }
+  .home-page .search-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px;
+    border-radius: 15px;
+  }
+  .home-page .search-bar input {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 11px;
+    font-size: .85rem;
+  }
+  .home-page .search-bar .btn {
+    width: 100%;
+    min-height: 43px;
+    border-radius: 11px;
+    font-size: .88rem;
+  }
+  .home-page .trust-pills {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 13px;
+  }
+  .home-page .trust-pill {
+    min-height: 43px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 3px;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.15;
+    font-size: .62rem;
+  }
+  .home-page .trust-pill-icon { width: 15px; height: 15px; font-size: .65rem; }
+  .home-page .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .home-page .hero-actions .btn {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 8px;
+    font-size: .78rem;
+  }
+}
+@media (max-width: 390px) {
+  .home-page .site-header { gap: 6px; padding-inline: 9px; }
+  .home-page .brand { gap: 3px; }
+  .home-page .brand-wordmark { font-size: 1.03rem; }
+  .home-page .brand-wordmark small { font-size: .48rem; }
+  .home-page .header-location-pill { padding: 6px; font-size: .68rem; }
+  .home-page .mobile-header-controls { gap: 5px; }
+  .home-page .mobile-account-controls { gap: 5px; }
+  .home-page .mobile-account-controls .header-notifications,
+  .home-page .mobile-account-controls .user-account-button { width: 32px; height: 32px; min-width: 32px; min-height: 32px; flex-basis: 32px; }
+  .home-page .trust-pill { font-size: .57rem; }
+}
