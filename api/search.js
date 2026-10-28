@@ -86,6 +86,7 @@ function getSource(doc) {
 
   return {
     id: String(doc.$id || ""),
+    sourceType: String(doc.source_type || "conteúdo"),
     title: String(doc.title || "Conteúdo publicado"),
     summary: String(doc.summary || "").slice(0, 500),
     location: String(doc.location || doc.address || "").trim() || null,
@@ -101,6 +102,10 @@ function getSource(doc) {
     currency: String(doc.currency || "Kz").trim(),
     description: String(doc.description || "").slice(0, 1000),
     vendor: String(doc.vendor_name || doc.business_name || doc.store_name || doc.store || doc.shop_name || "").trim() || null,
+    stockQuantity: doc.stock_quantity !== undefined && doc.stock_quantity !== null
+      && Number.isFinite(Number(doc.stock_quantity)) ? Number(doc.stock_quantity) : null,
+    condition: String(doc.condition || "").trim() || null,
+    vendorStatus: String(doc.vendor_status || "").trim() || null,
     updatedAt: doc.updated_at
       ? String(doc.updated_at)
       : (doc.$updatedAt ? String(doc.$updatedAt) : null)
