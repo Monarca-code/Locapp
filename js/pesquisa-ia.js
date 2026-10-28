@@ -11,6 +11,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const results = document.getElementById("ai-results");
   const charCount = document.getElementById("ai-char-count");
   const suggestions = document.querySelectorAll(".ai-suggestion");
+  const copyAnswerButton = document.getElementById("ai-copy-answer");
+
+  if (copyAnswerButton) {
+    copyAnswerButton.addEventListener("click", async function () {
+      const answer = document.querySelector(".ai-answer-body");
+      const text = answer ? answer.innerText.trim() : "";
+      if (!text) {
+        copyAnswerButton.title = "Ainda não há resposta para copiar";
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        copyAnswerButton.title = "Resposta copiada";
+        copyAnswerButton.textContent = "✓";
+        window.setTimeout(() => {
+          copyAnswerButton.title = "Copiar resposta";
+          copyAnswerButton.textContent = "▢";
+        }, 1600);
+      } catch (_) {
+        copyAnswerButton.title = "Não foi possível copiar neste navegador";
+      }
+    });
+  }
 
   const mapScreen = document.getElementById("ai-map-screen");
   const mapClose = document.getElementById("ai-map-close");
