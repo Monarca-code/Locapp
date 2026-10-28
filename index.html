@@ -24,14 +24,18 @@
       <span class="brand-wordmark">Locapp<span class="brand-period">.</span><small>Descubra perto de si</small></span>
     </a>
 
-    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
-
-    <a class="header-location-pill" href="pages/farmacias.html" aria-label="Consultar serviços em Luanda">
-      <span aria-hidden="true">⌖</span><span>Luanda</span><span class="location-chevron" aria-hidden="true">⌄</span>
-    </a>
-    <a class="header-notifications" href="pages/farmacias.html" aria-label="Ver atualizações dos serviços" title="Atualizações dos serviços">
-      <span aria-hidden="true">♧</span>
-    </a>
+    <div class="mobile-header-controls">
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+      <a class="header-location-pill" href="pages/farmacias.html" aria-label="Consultar serviços em Luanda">
+        <span aria-hidden="true">⌖</span><span>Luanda</span><span class="location-chevron" aria-hidden="true">⌄</span>
+      </a>
+    </div>
+    <div class="mobile-account-controls">
+      <a class="header-notifications" href="pages/farmacias.html" aria-label="Ver notificações" title="Notificações"><span aria-hidden="true">♧</span><i aria-hidden="true"></i></a>
+      <a class="user-account-button" href="pages/entrar.html" aria-label="Abrir perfil do utilizador" title="Perfil do utilizador">
+        <svg class="user-account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg>
+      </a>
+    </div>
 
     <nav class="main-nav" aria-label="Navegação principal">
       <a class="active" href="index.html" aria-current="page">Início</a>
@@ -41,9 +45,10 @@
       <a href="pages/sobre.html">Sobre</a>
     </nav>
 
-    <div class="header-actions">
-      <a class="account-cta user-account-button" href="pages/entrar.html" aria-label="Abrir a conta ou iniciar sessão" title="Conta de utilizador">
-        <span class="user-account-icon" aria-hidden="true">♙</span>
+    <div class="header-actions desktop-header-actions">
+      <a class="header-notifications" href="pages/farmacias.html" aria-label="Ver notificações" title="Notificações"><span aria-hidden="true">♧</span><i aria-hidden="true"></i></a>
+      <a class="user-account-button" href="pages/entrar.html" aria-label="Abrir perfil do utilizador" title="Perfil do utilizador">
+        <svg class="user-account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.5-4 3.1-6 7.2-6s6.7 2 7.2 6"/></svg>
       </a>
     </div>
   </header>
@@ -64,7 +69,11 @@
           <button class="btn btn-blue" type="submit">Pesquisar com IA <span aria-hidden="true">→</span></button>
         </form>
 
-        <p class="small-note"><span class="status-dot" aria-hidden="true"></span>Pesquisa inteligente · fontes identificadas · dados de teste assinalados</p>
+        <div class="trust-pills" aria-label="Vantagens da pesquisa Locapp">
+          <span class="trust-pill"><span class="trust-pill-icon" aria-hidden="true">✦</span>Pesquisa inteligente</span>
+          <span class="trust-pill"><span class="trust-pill-icon" aria-hidden="true">✓</span>Fontes verificadas</span>
+          <span class="trust-pill"><span class="trust-pill-icon" aria-hidden="true">↻</span>Dados atualizados</span>
+        </div>
         <div class="hero-actions">
           <button id="show-map" type="button" class="btn btn-outline">⌖ Explorar mapa</button>
           <a href="pages/farmacias.html" class="btn btn-outline">Ver farmácias <span aria-hidden="true">→</span></a>
