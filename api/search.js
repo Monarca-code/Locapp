@@ -120,7 +120,8 @@ async function loadPublishedDocuments() {
   const collectionId = process.env.APPWRITE_CONTENTS_COLLECTION_ID;
 
   if (!endpoint || !projectId || !apiKey || !databaseId || !collectionId) {
-    throw new Error("APPWRITE_CONFIG_MISSING");
+    console.warn("Locapp: content collection not configured; continuing without content documents.");
+    return [];
   }
 
   const url =
