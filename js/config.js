@@ -4,7 +4,7 @@
  */
 window.LOCAPP_CONFIG = {
   appwriteEndpoint: "https://fra.cloud.appwrite.io/v1",
-  appwriteProjectId: "COLOCA_AQUI_O_PROJECT_ID",
+  appwriteProjectId: "6ab3b4f60024bedabd55",
   databaseId: "locapp",
   collections: {
     pharmacies: "pharmacies",
