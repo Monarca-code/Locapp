@@ -1031,3 +1031,60 @@ body.ai-map-open { overflow: hidden; }
  .ai-answer-body{font-size:12px;line-height:1.6}
 }
 @media(max-width:360px){.ai-suggestion{padding:7px 5px;font-size:9px}}
+
+
+/* Compactação final dos resultados e das fontes consultadas */
+.ai-results { margin-top: 10px !important; }
+.ai-answer {
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+}
+.ai-answer-header {
+  padding: 0 0 8px !important;
+  margin: 0 !important;
+  gap: 7px !important;
+}
+.ai-answer-header h2 { font-size: 15px !important; }
+.ai-answer-badge { padding: 4px 7px !important; font-size: 9px !important; }
+.ai-answer-body {
+  padding: 8px 0 0 !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+.ai-answer-body p { margin: 0 0 6px !important; }
+.ai-answer-body ul, .ai-answer-body ol {
+  margin: 4px 0 6px !important;
+  padding-left: 17px !important;
+}
+.ai-sources {
+  margin-top: 10px !important;
+  padding: 9px 0 0 !important;
+}
+.ai-sources h3 { margin: 0 0 6px !important; font-size: 12px !important; }
+.ai-source-item {
+  margin-top: 6px !important;
+  padding: 8px 9px !important;
+  border-radius: 8px !important;
+}
+.ai-source-item > strong { margin-bottom: 3px !important; font-size: 11px !important; line-height: 1.35 !important; }
+.ai-source-item > p { margin: 3px 0 5px !important; font-size: 10px !important; line-height: 1.4 !important; }
+.ai-source-link { font-size: 10px !important; }
+.ai-product-badge { margin: 2px 0 5px !important; padding: 3px 6px !important; font-size: 8px !important; }
+.ai-product-facts { gap: 4px !important; margin: 5px 0 6px !important; }
+.ai-product-facts span, .ai-product-facts strong { padding: 4px 6px !important; font-size: 9px !important; }
+.ai-store-details { gap: 4px !important; margin-top: 6px !important; padding: 8px !important; border-radius: 8px !important; }
+.ai-store-label { font-size: 8px !important; }
+.ai-store-name { font-size: 12px !important; }
+.ai-store-details .ai-source-location { font-size: 10px !important; line-height: 1.4 !important; }
+.ai-map-link { margin-top: 2px !important; padding: 7px 9px !important; font-size: 10px !important; }
+.ai-map-unavailable { font-size: 10px !important; }
+.ai-loading, .ai-error, .ai-empty-state { padding: 16px !important; border-radius: 12px !important; }
+.ai-loading h2, .ai-error h2, .ai-empty-state h2 { margin: 8px 0 5px !important; font-size: 16px !important; }
+.ai-loading p, .ai-error p, .ai-empty-state p { font-size: 11px !important; line-height: 1.5 !important; }
+@media (max-width: 650px) {
+  .ai-answer { padding: 10px !important; }
+  .ai-answer-body { font-size: 11px !important; line-height: 1.5 !important; }
+  .ai-source-item { padding: 7px 8px !important; }
+  .ai-source-item > strong { font-size: 10px !important; }
+  .ai-store-details { padding: 7px !important; }
+}
