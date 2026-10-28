@@ -12,6 +12,89 @@ document.addEventListener("DOMContentLoaded", function () {
   const charCount = document.getElementById("ai-char-count");
   const suggestions = document.querySelectorAll(".ai-suggestion");
 
+  const mapScreen = document.getElementById("ai-map-screen");
+  const mapClose = document.getElementById("ai-map-close");
+  const mapElement = document.getElementById("ai-result-map");
+  const mapCaption = document.getElementById("ai-map-caption");
+  let resultMap = null;
+  let resultMarker = null;
+  let mapReturnFocus = null;
+
+  function openResultMap(details, trigger) {
+    if (!mapScreen || !mapElement) return;
+    mapReturnFocus = trigger || null;
+    mapCaption.textContent = details.address
+      ? details.name + " · " + details.address
+      : details.name || "Localização do resultado";
+    mapScreen.classList.add("is-active");
+    mapScreen.setAttribute("aria-hidden", "false");
+    document.body.classList.add("ai-map-open");
+
+    const hasCoordinates = Number.isFinite(details.lat) && Number.isFinite(details.lon);
+    const fallback = [-8.8383, 13.2344];
+
+    function showMap(lat, lon, zoom) {
+      if (typeof L === "undefined") {
+        mapCaption.textContent = "Não foi possível carregar o mapa. Verifica a ligação à Internet.";
+        return;
+      }
+      const center = [lat, lon];
+      if (!resultMap) {
+        resultMap = L.map(mapElement, { zoomControl: true }).setView(center, zoom);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(resultMap);
+      } else {
+        resultMap.setView(center, zoom);
+      }
+      if (resultMarker) resultMap.removeLayer(resultMarker);
+      resultMarker = L.marker(center).addTo(resultMap).bindPopup(details.name || "Localização do resultado").openPopup();
+      window.setTimeout(() => resultMap && resultMap.invalidateSize(true), 420);
+    }
+
+    if (hasCoordinates) {
+      showMap(details.lat, details.lon, 16);
+    } else if (details.address) {
+      mapCaption.textContent = "A localizar " + details.address + "…";
+      fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent([details.name, details.address].filter(Boolean).join(", ")))
+        .then(response => response.ok ? response.json() : [])
+        .then(items => {
+          if (!mapScreen.classList.contains("is-active")) return;
+          if (items && items[0]) {
+            showMap(Number(items[0].lat), Number(items[0].lon), 16);
+            mapCaption.textContent = (details.name || "Local") + " · " + details.address;
+          } else {
+            showMap(fallback[0], fallback[1], 12);
+            mapCaption.textContent = "Não foi possível localizar a morada com precisão. O mapa mostra Luanda como referência.";
+          }
+        })
+        .catch(() => {
+          showMap(fallback[0], fallback[1], 12);
+          mapCaption.textContent = "Não foi possível localizar a morada. O mapa mostra Luanda como referência.";
+        });
+    } else {
+      showMap(fallback[0], fallback[1], 12);
+      mapCaption.textContent = "Este registo não contém coordenadas nem morada. O mapa mostra Luanda como referência.";
+    }
+    if (mapClose) mapClose.focus({ preventScroll: true });
+  }
+
+  function closeResultMap() {
+    if (!mapScreen) return;
+    mapScreen.classList.remove("is-active");
+    mapScreen.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("ai-map-open");
+    if (mapReturnFocus) mapReturnFocus.focus({ preventScroll: true });
+  }
+
+  if (mapClose) mapClose.addEventListener("click", closeResultMap);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && mapScreen && mapScreen.classList.contains("is-active")) {
+      closeResultMap();
+    }
+  });
+
   if (!form || !input || !submitButton || !results) return;
 
   function makeElement(tag, className, text) {
@@ -146,23 +229,17 @@ document.addEventListener("DOMContentLoaded", function () {
             source.latitude !== null && source.longitude !== null &&
             source.latitude !== "" && source.longitude !== "";
 
-          let mapUrl = "";
-          if (hasCoordinates) {
-            mapUrl = "https://www.openstreetmap.org/?mlat=" +
-              encodeURIComponent(String(source.latitude)) +
-              "&mlon=" + encodeURIComponent(String(source.longitude)) +
-              "#map=17/" + encodeURIComponent(String(source.latitude)) +
-              "/" + encodeURIComponent(String(source.longitude));
-          } else if (storeAddress) {
-            mapUrl = "https://www.openstreetmap.org/search?query=" +
-              encodeURIComponent([storeName, storeAddress].filter(Boolean).join(", "));
-          }
-
-          if (mapUrl) {
-            const mapLink = makeElement("a", "ai-map-link", "⌖ Ver loja no mapa");
-            mapLink.href = mapUrl;
-            mapLink.target = "_blank";
-            mapLink.rel = "noopener noreferrer";
+          if (hasCoordinates || storeAddress) {
+            const mapLink = makeElement("button", "ai-map-link", "⌖ Ver loja no mapa");
+            mapLink.type = "button";
+            mapLink.addEventListener("click", function () {
+              openResultMap({
+                name: storeName || "Localização do resultado",
+                address: storeAddress,
+                lat: hasCoordinates ? Number(source.latitude) : NaN,
+                lon: hasCoordinates ? Number(source.longitude) : NaN
+              }, mapLink);
+            });
             storePanel.appendChild(mapLink);
           } else {
             storePanel.appendChild(makeElement("p", "ai-map-unavailable",
