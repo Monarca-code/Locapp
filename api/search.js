@@ -1,7 +1,7 @@
 
 "use strict";
 
-const DEFAULT_MODEL = "gemini-3.8-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 const FALLBACK_MODELS = [
   "gemini-3.8-flash",
@@ -388,7 +388,6 @@ Devolve apenas a resposta final dirigida ao utilizador.
               parts: [{ text: userPrompt }]
             }
           ],
-          tools: [{ google_search: {} }],
           generationConfig: {
             temperature: 0.2,
             maxOutputTokens: 2200
@@ -526,8 +525,14 @@ export default async function handler(req, res) {
   try {
     
     const [documents, products] = await Promise.all([
-      loadPublishedDocuments(),
-      loadPublishedProducts()
+      loadPublishedDocuments().catch((error) => {
+        console.error("Locapp content lookup failed:", error.message);
+        return [];
+      }),
+      loadPublishedProducts().catch((error) => {
+        console.error("Locapp product lookup failed:", error.message);
+        return [];
+      })
     ]);
     const allRecords = [...products, ...documents];
     const relevantDocuments = rankDocuments(allRecords, question);
