@@ -339,3 +339,25 @@
   .home-page .brand-wordmark small { font-size: .57rem; }
   .home-page .account-cta { gap: 5px!important; font-size: .73rem!important; }
 }
+
+
+/* Botão de utilizador: mantém o ícone e remove o texto redundante de entrar */
+.home-page .user-account-button {
+  width: 48px; min-width: 48px; height: 48px; min-height: 48px;
+  padding: 0; gap: 0; border-radius: 16px; color: #eafaff;
+  background: linear-gradient(145deg, #1a6b91, #103653);
+  border-color: rgba(88,213,245,.55);
+  box-shadow: 0 8px 24px rgba(24,151,201,.16), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.home-page .user-account-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(24,151,201,.28), 0 0 0 4px rgba(88,213,245,.08);
+}
+.home-page .user-account-icon {
+  display: grid; place-items: center; width: 30px; height: 30px;
+  border: 1px solid rgba(226,248,255,.55); border-radius: 50%;
+  background: rgba(255,255,255,.1); font-size: 23px; line-height: 1;
+}
+@media (max-width: 780px) {
+  .home-page .user-account-button { width:43px; min-width:43px; height:43px; min-height:43px; }
+}
