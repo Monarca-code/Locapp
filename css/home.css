@@ -646,3 +646,34 @@ html { scroll-behavior: smooth; }
   .home-page .header-notifications { flex-basis:36px; width:36px; height:40px; }
   .home-page .account-cta { width:38px; min-height:40px; }
 }
+
+
+/* Correção final do símbolo: manter o pin de localização, não um quadrado */
+.home-page .brand-pin {
+  position:relative; display:inline-block; flex:0 0 42px;
+  width:42px; height:42px; margin:0;
+  border-radius:50% 50% 50% 8%;
+  transform:rotate(-45deg);
+  background:linear-gradient(145deg,#43c9ff,#145cf0);
+  box-shadow:0 7px 22px rgba(27,119,255,.35);
+  color:transparent!important; font-size:0;
+}
+.home-page .brand-pin::before {
+  content:""; position:absolute; width:15px; height:15px;
+  left:13.5px; top:13.5px; border-radius:50%;
+  background:#071a33; border:0;
+}
+.home-page .brand-pin::after {
+  content:none;
+}
+.home-page .brand { gap:12px; }
+.home-page .brand-wordmark { font-size:1.65rem; }
+.home-page .brand-wordmark small { font-size:.67rem; }
+@media(max-width:780px) {
+  .home-page .site-header { display:flex; align-items:center; flex-wrap:nowrap; }
+  .home-page .menu-toggle { flex:0 0 46px; width:46px; height:46px; }
+  .home-page .brand { flex:1 1 auto; min-width:0; }
+  .home-page .brand-pin { flex-basis:40px; width:40px; height:40px; }
+  .home-page .brand-wordmark { font-size:1.4rem; }
+  .home-page .header-actions { flex:0 0 auto; }
+}
