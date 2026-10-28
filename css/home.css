@@ -677,3 +677,22 @@ html { scroll-behavior: smooth; }
   .home-page .brand-wordmark { font-size:1.4rem; }
   .home-page .header-actions { flex:0 0 auto; }
 }
+
+
+/* Ajuste de fidelidade ao mockup mobile Locapp */
+.home-page .hero { position:relative; min-height:calc(100svh - 76px); display:flex; align-items:center; }
+.home-page .hero-content { position:relative; z-index:2; }
+.home-page .hero-map { background:#102b48; }
+.home-page .small-note { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
+@media(max-width:780px){
+ .home-page .hero { min-height:calc(100svh - 72px); padding:46px 20px 34px; align-items:center; }
+ .home-page .hero-content { max-width:100%; }
+ .home-page .hero .eyebrow { display:inline-flex; margin-bottom:20px; padding:9px 12px; font-size:10px; }
+ .home-page .hero h1 { max-width:360px; font-size:clamp(2.65rem,10.4vw,3.65rem); line-height:1.02; letter-spacing:-.065em; margin-bottom:18px; }
+ .home-page .hero-content > p:not(.small-note) { font-size:14px; line-height:1.65; margin-bottom:22px; }
+ .home-page .search-bar { gap:8px; padding:8px; border-radius:22px; }
+ .home-page .search-bar input { min-height:54px; font-size:14px; }
+ .home-page .search-bar .btn { min-height:54px; border-radius:15px; }
+ .home-page .small-note { margin-top:15px!important; font-size:11px!important; line-height:1.5; }
+ .home-page .category-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
