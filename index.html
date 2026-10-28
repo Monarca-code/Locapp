@@ -40,7 +40,7 @@
     <nav class="main-nav" aria-label="Navegação principal">
       <a class="active" href="index.html" aria-current="page">Início</a>
       <a href="pages/farmacias.html">Farmácias</a>
-      <a href="pages/pesquisa-ia.html">Pesquisa IA</a>
+      <a href="#locapp-ai" data-open-ai>Pesquisa IA</a>
       <a href="pages/publicar-produtos.html">Para negócios</a>
       <a href="pages/sobre.html">Sobre</a>
     </nav>
@@ -135,7 +135,7 @@
       <article class="benefits-panel">
         <h2>Pesquisa inteligente</h2>
         <p>Consulte conteúdos disponíveis na Locapp com apoio de IA. As respostas devem indicar as fontes utilizadas e distinguir dados confirmados de informação indisponível.</p>
-        <a class="text-link" href="pages/pesquisa-ia.html">Abrir pesquisa IA →</a>
+        <a class="text-link" href="#locapp-ai" data-open-ai>Abrir pesquisa IA →</a>
         <hr>
         <h3>Informação transparente</h3>
         <p>Preços e stock não são garantidos em tempo real: confirme a data e a origem de cada registo antes de tomar decisões.</p>
@@ -161,6 +161,58 @@
     </div>
   </section>
 
+
+  <section id="locapp-ai" class="ai-search-page ai-modal" aria-hidden="true" aria-label="Pesquisa inteligente Locapp">
+    <div class="ai-modal-backdrop" data-close-ai></div>
+    <div class="ai-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+      <header class="ai-modal-header">
+        <a class="ai-brand" href="#locapp-ai" aria-label="Locapp AI">
+          <img class="ai-brand-mark ai-brand-image" src="favicon.svg" alt="">
+          <span>Locapp AI <b class="ai-pro-badge">PRO✦</b><small>Pesquisa inteligente</small></span>
+        </a>
+        <button type="button" class="ai-modal-close" data-close-ai aria-label="Fechar pesquisa IA">✕</button>
+      </header>
+      <main class="ai-main ai-modal-main">
+        <section class="ai-intro ai-modal-intro">
+          <span class="ai-eyebrow">PESQUISA COM INTELIGÊNCIA ARTIFICIAL</span>
+          <h1 id="ai-modal-title">O que precisa de <span>encontrar?</span></h1>
+          <p>Pesquise produtos, serviços e conteúdos publicados na Locapp. As respostas podem apresentar as fontes encontradas.</p>
+        </section>
+        <section class="ai-search-panel" aria-label="Pesquisa inteligente">
+          <form id="ai-search-form">
+            <label for="ai-query">Escreva a sua pergunta</label>
+            <div class="ai-input-row">
+              <textarea id="ai-query" name="query" rows="2" maxlength="1000" placeholder="Ex.: Que farmácias estão registadas na Aviação, Luanda?" required></textarea>
+              <button id="ai-submit" type="submit"><span>Pesquisar</span><span aria-hidden="true">→</span></button>
+            </div>
+            <div class="ai-form-footer"><span>Até 1.000 caracteres</span><span id="ai-char-count">0/1000</span></div>
+          </form>
+          <div class="ai-suggestions">
+            <p>Experimente perguntar</p>
+            <div class="ai-suggestion-list">
+              <button type="button" class="ai-suggestion">Que conteúdos estão publicados?</button>
+              <button type="button" class="ai-suggestion">Que farmácias estão registadas?</button>
+              <button type="button" class="ai-suggestion">Como encontrar informações sobre um produto?</button>
+            </div>
+          </div>
+        </section>
+        <section id="ai-results" class="ai-results" aria-live="polite" aria-atomic="false">
+          <div class="ai-empty-state" id="ai-empty-state"><div class="ai-empty-icon" aria-hidden="true">✦</div><h2>Resultado da pesquisa</h2><p>Introduza uma pergunta para consultar a informação disponível na Locapp.</p></div>
+        </section>
+        <p class="ai-disclaimer">A IA pode cometer erros. Confirme as informações importantes nas fontes indicadas.</p>
+      </main>
+    </div>
+  </section>
+
+  <section id="ai-map-screen" class="ai-map-screen" aria-hidden="true" aria-label="Mapa do local selecionado">
+    <header class="ai-map-header">
+      <div class="ai-map-brand"><span class="ai-brand-mark">L</span><span>LOCAPP <small>Localização do resultado</small></span></div>
+      <button id="ai-map-close" type="button" class="ai-map-close" aria-label="Fechar mapa">✕ Fechar mapa</button>
+    </header>
+    <div id="ai-result-map" class="ai-result-map"></div>
+    <p class="ai-map-caption" id="ai-map-caption">Localização associada ao resultado.</p>
+  </section>
+
   <footer class="site-footer">
     <a class="brand" href="index.html"><span class="brand-pin" aria-hidden="true">●</span> Locapp</a>
     <p>Conectando pessoas aos serviços que importam.</p>
@@ -170,5 +222,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/pesquisa-ia.js"></script>
 </body>
 </html>
