@@ -7,12 +7,12 @@ O endpoint público `/api/catalog` devolve apenas documentos de produtos com `st
 No projeto que serve `https://locapp-ruby.vercel.app`, abre **Settings → Environment Variables** e configura:
 
 - `APPWRITE_ENDPOINT` = `https://fra.cloud.appwrite.io/v1`
-- `APPWRITE_PROJECT_ID` = ID real do projeto Appwrite (não o nome do projeto)
+- `APPWRITE_PROJECT_ID` = `6ab3b4f60024bedabd55`
 - `APPWRITE_API_KEY` = chave de servidor do Appwrite, com permissões mínimas de leitura para as coleções necessárias
-- `APPWRITE_DATABASE_ID` = ID real da base de dados
+- `APPWRITE_DATABASE_ID` = `locapp_db` (confirma que este é também o Database ID, não apenas o nome visível)
 - `APPWRITE_CONTENTS_COLLECTION_ID` = `6ae0baa4001090ac39cb` (coleção `contents`, usada pela pesquisa IA)
-- `APPWRITE_PRODUCTS_COLLECTION_ID` = ID real da coleção de produtos
-- `APPWRITE_VENDORS_COLLECTION_ID` = ID real da coleção de perfis comerciais
+- `APPWRITE_PRODUCTS_COLLECTION_ID` = `products`
+- `APPWRITE_VENDORS_COLLECTION_ID` = `vendors`
 - `FRONTEND_ORIGINS` = origem HTTPS exata do frontend, por exemplo `https://monarca-code.github.io` ou o domínio de produção real. Se existirem vários domínios, separa-os por vírgulas.
 
 Depois de alterar variáveis, faz novo deploy da Vercel. Não coloques `APPWRITE_API_KEY` em `js/config.js), HTML ou GitHub.
