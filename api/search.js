@@ -5,7 +5,8 @@ const DEFAULT_MODEL = "gemini-3.8-flash";
 
 const FALLBACK_MODELS = [
   "gemini-3.6-flash",
-  "gemini-3.5-flash-lite"
+  "gemini-3.5-flash-lite",
+  "gemini-2.0-flash"
 ];
 
 function sendJson(res, status, data) {
@@ -402,6 +403,7 @@ Devolve apenas a resposta final dirigida ao utilizador.
       if (!response.ok) {
         lastStatus = response.status;
         const errorText = await response.text().catch(() => "");
+        const lowerError = errorText.toLowerCase();
 
         console.error(
           `Gemini ${model} failed:`,
@@ -409,11 +411,19 @@ Devolve apenas a resposta final dirigida ao utilizador.
           errorText.slice(0, 400)
         );
 
-        if ([429, 500, 502, 503, 504].includes(response.status)) {
-          continue;
-        }
+        // Tenta o próximo modelo quando há limite/quota, indisponibilidade
+        // temporária ou quando um modelo já não está disponível.
+        const quotaOrRateLimit =
+          lowerError.includes("quota") ||
+          lowerError.includes("rate limit") ||
+          lowerError.includes("ratelimit") ||
+          lowerError.includes("resource_exhausted") ||
+          lowerError.includes("too many requests");
 
-        if (response.status === 404) {
+        if (
+          [429, 500, 502, 503, 504, 404].includes(response.status) ||
+          (response.status === 403 && quotaOrRateLimit)
+        ) {
           continue;
         }
 
