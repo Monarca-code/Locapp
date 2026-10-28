@@ -3,140 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Locapp — encontre serviços úteis perto de si.">
-  <title>Locapp | Serviços perto de si</title>
+  <meta name="theme-color" content="#06172b">
+  <meta name="description" content="Locapp — encontre farmácias, produtos e informação útil perto de si, com pesquisa inteligente e fontes verificáveis.">
+  <title>Locapp | Informação útil perto de si</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/pages.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
-<body>
+<body class="home-page">
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="brand-pin">●</span> Locapp</a>
-    <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
-    <nav class="main-nav">
-      <a class="active" href="index.html">Início</a>
+    <a class="brand" href="index.html" aria-label="Locapp — página inicial"><span class="brand-pin" aria-hidden="true">●</span> Locapp</a>
+    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a class="active" href="index.html" aria-current="page">Início</a>
       <a href="pages/farmacias.html">Farmácias</a>
-      <a href="pages/publicar-produtos.html"><i ></i></a>
+      <a href="pages/publicar-produtos.html">Publicar produtos</a>
       <a href="pages/pesquisa-ia.html">Pesquisa IA</a>
       <a href="pages/sobre.html">Sobre</a>
     </nav>
     <div class="header-actions">
       <a class="btn btn-outline" href="pages/entrar.html">Entrar</a>
-      
-<a
-  href="pages/perfil.html"
-  class="user-profile-button"
-  aria-label="Abrir o perfil do utilizador"
-  title="O meu perfil"
->
-  <svg
-    class="user-profile-icon"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.7"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="8" r="4"></circle>
-    <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
-  </svg>
-</a>
-
+      <a href="pages/perfil.html" class="user-profile-button" aria-label="Abrir o perfil do utilizador" title="O meu perfil">
+        <svg class="user-profile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
+        </svg>
+      </a>
     </div>
   </header>
 
   <main>
-    <section class="hero">
-  <div
-    class="hero-map"
-    id="hero-map"
-    aria-label="Mapa de Luanda"
-  ></div>
+    <section class="hero" aria-labelledby="home-title">
+      <div class="hero-map" id="hero-map" aria-label="Mapa de Luanda"></div>
+      <div class="hero-shade"></div>
 
-  <div class="hero-shade"></div>
+      <div class="hero-content">
+        <span class="eyebrow">Informação local. Decisões melhores.</span>
+        <h1 id="home-title">Encontre o que precisa.<br><span>Mais perto de si.</span></h1>
+        <p>Descubra farmácias, consulte preços registados e pesquise informação através da IA. Respostas claras, com fontes para confirmar os detalhes.</p>
 
-  <div class="hero-content">
-    <span class="eyebrow">A sua plataforma de localização</span>
+        <form class="search-bar" id="home-search">
+          <label class="sr-only" for="home-query">O que pretende encontrar?</label>
+          <input id="home-query" type="search" placeholder="Ex.: farmácias na Aviação, Luanda…" required>
+          <button class="btn btn-blue" type="submit">Pesquisar com IA <span aria-hidden="true">→</span></button>
+        </form>
 
-    <h1>
-      Encontre serviços<br>
-      perto de si, <span>sempre.</span>
-    </h1>
+        <p class="small-note"><span class="status-dot" aria-hidden="true"></span>Pesquisa inteligente · fontes identificadas · dados de teste assinalados</p>
+        <div class="hero-actions">
+          <button id="show-map" type="button" class="btn btn-outline">⌖ Explorar mapa</button>
+          <a href="pages/farmacias.html" class="btn btn-outline">Ver farmácias <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
 
-    <p>
-      Pergunte à IA onde encontrar produtos farmacêuticos,
-      compare preços registados e consulte a localidade indicada.
-    </p>
+      <aside class="hero-card" aria-label="Acesso rápido a farmácias">
+        <span class="round-icon" aria-hidden="true">◷</span>
+        <h2>Procure serviços essenciais</h2>
+        <p>Comece pelas farmácias registadas e consulte a informação de preços e localização disponível.</p>
+        <a href="pages/farmacias.html" class="card-link">Explorar farmácias <span aria-hidden="true">→</span></a>
+      </aside>
+    </section>
 
-    <form class="search-bar" id="home-search">
-      <label class="sr-only" for="home-query">Pergunte à IA</label>
-
-      <input
-        id="home-query"
-        type="search"
-        placeholder="Pergunte à IA: onde encontro um produto mais barato?"
-        required
-      >
-
-      <button class="btn btn-blue" type="submit">
-        Perguntar à IA <span>→</span>
-      </button>
-    </form>
-
-    <p class="small-note">
-      <span class="status-dot"></span>
-      Pesquisa por preços e localidade · dados de teste identificados
-    </p>
-
-    <div class="hero-actions">
-      <button id="show-map" type="button" class="btn btn-outline">
-        Ver mapa
-      </button>
-    </div>
-  </div>
-
-  <aside class="hero-card">
-    <span class="round-icon">◷</span>
-    <h2>Serviços 24 horas</h2>
-    <p>
-      Consulte farmácias e, futuramente, outros serviços
-      com funcionamento alargado.
-    </p>
-    <a href="pages/farmacias.html" class="card-link">
-      Aviação, Luanda <span>→</span>
-    </a>
-  </aside>
-</section>
-    <section class="section categories-section">
+    <section class="section categories-section" aria-labelledby="categories-title">
       <div class="section-heading">
-        <h2>Categorias de serviços</h2>
-        <span class="muted">Outras categorias serão adicionadas por fases</span>
+        <h2 id="categories-title">Explore por categoria</h2>
+        <span class="muted">Mais serviços serão adicionados por fases</span>
       </div>
       <div class="category-grid">
-        <a class="category-card category-active" href="pages/farmacias.html"><span class="category-icon">✚</span><strong>Farmácias</strong><small>Disponível</small></a>
-        <div class="category-card future"><span class="category-icon">♨</span><strong>Restaurantes</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">↗</span><strong>Reboques</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">▰</span><strong>Hotéis</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">✚</span><strong>Hospitais</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">▤</span><strong>ATM</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">◉</span><strong>Radares</strong><small>Em breve</small></div>
-        <div class="category-card future"><span class="category-icon">•••</span><strong>Outros serviços</strong><small>Em breve</small></div>
+        <a class="category-card category-active" href="pages/farmacias.html"><span class="category-icon" aria-hidden="true">✚</span><strong>Farmácias</strong><small>Disponível</small></a>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">♨</span><strong>Restaurantes</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">↗</span><strong>Reboques</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">▰</span><strong>Hotéis</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">✚</span><strong>Hospitais</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">▤</span><strong>ATM</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">◉</span><strong>Radares</strong><small>Em breve</small></div>
+        <div class="category-card future"><span class="category-icon" aria-hidden="true">•••</span><strong>Outros serviços</strong><small>Em breve</small></div>
       </div>
     </section>
 
-    <section class="section feature-layout">
+    <section class="section feature-layout" aria-label="Funcionalidades da Locapp">
       <article class="feature-panel">
-        <span class="eyebrow">PRIMEIRO SERVIÇO</span>
+        <span class="eyebrow">SERVIÇO DISPONÍVEL</span>
         <h2>Farmácias ao seu alcance</h2>
-        <p>Procure farmácias, consulte preços registados e veja quando a informação foi atualizada.</p>
+        <p>Encontre farmácias, consulte preços registados e verifique quando a informação foi atualizada.</p>
         <ul class="check-list">
           <li>Localização no mapa</li>
           <li>Filtro de funcionamento 24/24</li>
@@ -144,52 +97,43 @@
           <li>Disponibilidade declarada</li>
           <li>Alertas de preços numa fase seguinte</li>
         </ul>
-        <a class="btn btn-blue" href="pages/farmacias.html">Explorar farmácias →</a>
+        <a class="btn btn-blue" href="pages/farmacias.html">Explorar farmácias <span aria-hidden="true">→</span></a>
       </article>
       <article class="benefits-panel">
         <h2>Pesquisa inteligente</h2>
-        <p>A IA poderá ajudar a encontrar informação pública, com fontes para confirmar os detalhes.</p>
+        <p>Consulte conteúdos disponíveis na Locapp com apoio de IA. As respostas devem indicar as fontes utilizadas e distinguir dados confirmados de informação indisponível.</p>
         <a class="text-link" href="pages/pesquisa-ia.html">Abrir pesquisa IA →</a>
         <hr>
         <h3>Informação transparente</h3>
-        <p>Os preços e o stock só serão apresentados como confirmados quando houver registo e atualização identificáveis.</p>
-        <a class="text-link" href="pages/publicar-produtos.html">Publicar produtos de teste →</a>
+        <p>Preços e stock não são garantidos em tempo real: confirme a data e a origem de cada registo antes de tomar decisões.</p>
+        <a class="text-link" href="pages/publicar-produtos.html">Consultar publicação de produtos →</a>
       </article>
     </section>
   </main>
-<!-- SECÇÃO DO MAPA EM ECRÃ INTEIRO -->
-<section id="map-screen" class="map-screen" aria-hidden="true">
-  <header class="map-screen-header">
-    <div class="map-screen-brand">
-      <span class="map-brand-icon">L</span>
-      <span>LOCAPP <small>Explorar mapa</small></span>
+
+  <section id="map-screen" class="map-screen" aria-hidden="true" aria-label="Mapa em ecrã inteiro">
+    <header class="map-screen-header">
+      <div class="map-screen-brand">
+        <span class="map-brand-icon">L</span>
+        <span>LOCAPP <small>Explorar mapa</small></span>
+      </div>
+      <button id="close-map" class="map-close-button" type="button" aria-label="Fechar mapa e voltar à página inicial">
+        <span aria-hidden="true">✕</span> Fechar mapa
+      </button>
+    </header>
+    <div id="fullscreen-map" class="fullscreen-map"></div>
+    <div class="map-screen-controls">
+      <button id="map-locate-me" type="button">⌖ Usar a minha localização</button>
+      <p>Explora as ruas e localidades no mapa.</p>
     </div>
+  </section>
 
-    <button
-      id="close-map"
-      class="map-close-button"
-      type="button"
-      aria-label="Fechar mapa e voltar à página inicial"
-    >
-      <span aria-hidden="true">✕</span>
-      Fechar mapa
-    </button>
-  </header>
-
-  <div id="fullscreen-map" class="fullscreen-map"></div>
-
-  <div class="map-screen-controls">
-    <button id="map-locate-me" type="button">
-      ⌖ Usar a minha localização
-    </button>
-    <p>Explora as ruas e localidades no mapa.</p>
-  </div>
-</section>
   <footer class="site-footer">
-    <a class="brand" href="index.html"><span class="brand-pin">●</span> Locapp</a>
+    <a class="brand" href="index.html"><span class="brand-pin" aria-hidden="true">●</span> Locapp</a>
     <p>Conectando pessoas aos serviços que importam.</p>
     <div><a href="pages/sobre.html">Sobre</a><a href="pages/sobre.html#contacto">Contacto</a><a href="pages/sobre.html#privacidade">Privacidade</a></div>
   </footer>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
