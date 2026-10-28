@@ -295,5 +295,123 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+
+  // =========================================
+  // 8. CONTEÚDOS PUBLICADOS NO CATÁLOGO
+  // =========================================
+  const publishedGrid = document.getElementById("published-grid");
+
+  function createPublishedCard(item) {
+    const card = document.createElement("article");
+    card.className = "published-card";
+
+    if (item.imageUrl) {
+      const image = document.createElement("img");
+      image.className = "published-image";
+      image.src = item.imageUrl;
+      image.alt = item.name || "Imagem do produto";
+      image.loading = "lazy";
+      image.referrerPolicy = "no-referrer";
+      image.onerror = function () {
+        const placeholder = document.createElement("div");
+        placeholder.className = "published-image published-image-placeholder";
+        placeholder.setAttribute("aria-hidden", "true");
+        placeholder.textContent = "◇";
+        image.replaceWith(placeholder);
+      };
+      card.appendChild(image);
+    } else {
+      const placeholder = document.createElement("div");
+      placeholder.className = "published-image published-image-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.textContent = "◇";
+      card.appendChild(placeholder);
+    }
+
+    const body = document.createElement("div");
+    body.className = "published-card-body";
+
+    if (item.category) {
+      const category = document.createElement("span");
+      category.className = "published-category";
+      category.textContent = item.category;
+      body.appendChild(category);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = item.name || "Produto publicado";
+    body.appendChild(title);
+
+    if (item.description) {
+      const description = document.createElement("p");
+      description.className = "published-description";
+      description.textContent = item.description;
+      body.appendChild(description);
+    }
+
+    if (Number.isFinite(item.price)) {
+      const price = document.createElement("div");
+      price.className = "published-price";
+      price.textContent = new Intl.NumberFormat("pt-AO", {
+        maximumFractionDigits: 2
+      }).format(item.price) + " " + (item.currency || "Kz");
+      body.appendChild(price);
+    } else {
+      const noPrice = document.createElement("div");
+      noPrice.className = "published-vendor";
+      noPrice.textContent = "Preço não indicado";
+      body.appendChild(noPrice);
+    }
+
+    const vendor = document.createElement("div");
+    vendor.className = "published-vendor";
+    vendor.textContent = item.vendor && item.vendor.name ? item.vendor.name : "Vendedor registado";
+    body.appendChild(vendor);
+
+    card.appendChild(body);
+    return card;
+  }
+
+  async function loadPublishedContent() {
+    if (!publishedGrid) return;
+
+    try {
+      const response = await fetch("/api/catalog?sort=name", {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        cache: "no-store"
+      });
+      const result = await response.json().catch(function () { return {}; });
+
+      if (!response.ok) {
+        throw new Error(result.error || "Não foi possível carregar o catálogo.");
+      }
+
+      const items = Array.isArray(result.items) ? result.items : [];
+      publishedGrid.replaceChildren();
+
+      if (!items.length) {
+        const empty = document.createElement("div");
+        empty.className = "published-state";
+        empty.textContent = "Ainda não existem produtos publicados para apresentar. Quando um negócio publicar conteúdo, ele aparecerá aqui.";
+        publishedGrid.appendChild(empty);
+        return;
+      }
+
+      items.slice(0, 8).forEach(function (item) {
+        publishedGrid.appendChild(createPublishedCard(item));
+      });
+    } catch (error) {
+      console.error("Locapp: erro ao carregar conteúdos publicados:", error);
+      publishedGrid.replaceChildren();
+      const state = document.createElement("div");
+      state.className = "published-state";
+      state.textContent = "Não foi possível carregar os conteúdos publicados neste momento.";
+      publishedGrid.appendChild(state);
+    }
+  }
+
+  loadPublishedContent();
+
   console.log("Locapp: aplicação inicializada.");
 });
