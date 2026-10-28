@@ -527,11 +527,11 @@ export default async function handler(req, res) {
       ? relevantDocuments.slice(0, 12)
       : allRecords.slice(0, productIntent ? 8 : 5);
 
-    const answer = await askGemini(question, documentsForAI);
+    const aiResult = await askGemini(question, documentsForAI);
 
     return sendJson(res, 200, {
-      answer,
-      sources: documentsForAI.map(getSource),
+      answer: aiResult.answer,
+      sources: [...documentsForAI.map(getSource), ...(aiResult.webSources || [])],
       resultsFound: relevantDocuments.length,
       productsFound: relevantDocuments.filter(doc => doc.source_type === "produto").length,
       analysisMode: productIntent ? "product-analysis" : "general-research"
