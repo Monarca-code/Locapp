@@ -94,6 +94,16 @@ export default async function handler(req, res) {
 
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const product = validateProduct(body);
+
+    if (req.method === "PATCH") {
+      const id = clean(new URL(req.url, "https://locapp.invalid").searchParams.get("id"), 200);
+      if (!id) return json(res, 400, { error: "Falta o ID do produto a editar." });
+      const existing = await aw(c, productPath + "/" + encodeURIComponent(id));
+      if (clean(existing.vendor_id, 200) !== userId) return json(res, 403, { error: "Só podes editar os teus próprios produtos." });
+      await aw(c, productPath + "/" + encodeURIComponent(id), { method: "PATCH", body: { data: { ...product, vendor_id: userId, updated_at: new Date().toISOString() } } });
+      return json(res, 200, { message: "Produto atualizado.", id });
+    }
+
     const businessName = clean(body.business_name, 160);
     const address = clean(body.address, 200);
     const municipality = clean(body.municipality, 100);
@@ -109,21 +119,12 @@ export default async function handler(req, res) {
       whatsapp: clean(body.whatsapp, 50)
     };
     const vendorDocumentPath = vendorPath + "/" + encodeURIComponent(userId);
-    if (req.method === "POST") {
-      try {
-        await aw(c, vendorDocumentPath, { method: "GET" });
-        await aw(c, vendorDocumentPath, { method: "PATCH", body: { data: vendor } });
-      } catch (e) {
-        if (e.status !== 404) throw e;
-        await aw(c, vendorPath, { method: "POST", body: { documentId: userId, data: vendor } });
-      }
-    } else {
-      const id = clean(new URL(req.url, "https://locapp.invalid").searchParams.get("id"), 200);
-      if (!id) return json(res, 400, { error: "Falta o ID do produto a editar." });
-      const existing = await aw(c, productPath + "/" + encodeURIComponent(id));
-      if (clean(existing.vendor_id, 200) !== userId) return json(res, 403, { error: "Só podes editar os teus próprios produtos." });
-      await aw(c, productPath + "/" + encodeURIComponent(id), { method: "PATCH", body: { data: { ...product, vendor_id: userId, updated_at: new Date().toISOString() } } });
-      return json(res, 200, { message: "Produto atualizado.", id });
+    try {
+      await aw(c, vendorDocumentPath, { method: "GET" });
+      await aw(c, vendorDocumentPath, { method: "PATCH", body: { data: vendor } });
+    } catch (e) {
+      if (e.status !== 404) throw e;
+      await aw(c, vendorPath, { method: "POST", body: { documentId: userId, data: vendor } });
     }
 
     const saved = await aw(c, productPath, { method: "POST", body: {
