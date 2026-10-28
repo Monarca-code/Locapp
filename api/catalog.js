@@ -43,25 +43,28 @@ async function appwriteGetDocument({ endpoint, databaseId, collectionId, documen
 export default async function handler(req, res) {
   const origin = clean(req.headers.origin, 500).replace(/\/+$/, "");
   const allowedOrigins = getAllowedOrigins();
+  const host = clean(req.headers.host, 300).toLowerCase();
+  const sameDeploymentOrigin = host === "locapp-ruby.vercel.app" && (!origin || origin === "https://locapp-ruby.vercel.app");
+  const originAllowed = allowedOrigins.includes(origin) || sameDeploymentOrigin;
   res.setHeader("Vary", "Origin");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Accept, Content-Type");
   res.setHeader("Access-Control-Max-Age", "86400");
 
-  if (allowedOrigins.includes(origin)) {
+  if (originAllowed && origin) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
 
   if (req.method === "OPTIONS") {
-    if (!allowedOrigins.includes(origin)) return json(res, 403, { error: "Origem não autorizada." });
+    if (!originAllowed) return json(res, 403, { error: "Origem não autorizada." });
     return res.status(204).end();
   }
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET, OPTIONS");
     return json(res, 405, { error: "Método não permitido." });
   }
-  if (!allowedOrigins.includes(origin)) return json(res, 403, { error: "Origem não autorizada." });
+  if (!originAllowed) return json(res, 403, { error: "Origem não autorizada." });
 
   const endpoint = clean(process.env.APPWRITE_ENDPOINT, 300).replace(/\/+$/, "");
   const projectId = clean(process.env.APPWRITE_PROJECT_ID, 200);
