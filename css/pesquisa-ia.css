@@ -908,3 +908,44 @@ body.ai-map-open { overflow: hidden; }
   .ai-sources { padding:0 19px 19px; }
   .ai-source-item { padding:16px; }
 }
+
+
+/* Cabeçalho da referência Locapp AI: marca + PRO + ferramentas */
+.ai-header {
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+}
+.ai-brand { display:flex; align-items:center; text-decoration:none; min-width:0; }
+.ai-brand-title { display:flex!important; align-items:center; gap:12px; color:#f7fbff; font-size:clamp(22px,3vw,31px); font-weight:700; letter-spacing:-1px; }
+.ai-brand-title::after { display:none!important; content:none!important; }
+.ai-pro-badge {
+  display:inline-flex; align-items:center; padding:6px 11px;
+  border:1px solid rgba(69,222,255,.75); border-radius:999px;
+  color:#7ceaff; background:rgba(13,123,194,.18);
+  font-size:12px; line-height:1; letter-spacing:.1px;
+  box-shadow:0 0 20px rgba(42,192,255,.08);
+}
+.ai-header-tools { display:flex; align-items:center; gap:13px; }
+.ai-tool-button {
+  display:grid; place-items:center; width:42px; height:42px;
+  padding:0; border:0; border-radius:12px; background:transparent;
+  color:#d6eaff; font:inherit; font-size:27px; line-height:1;
+  text-decoration:none; cursor:pointer;
+  transition:background .2s ease,color .2s ease,transform .2s ease;
+}
+.ai-tool-button:hover { background:rgba(102,183,255,.13); color:#78e5ff; transform:translateY(-1px); }
+.ai-empty-state { text-align:left; }
+.ai-empty-icon {
+  display:grid; place-items:center; width:54px; height:54px;
+  border-radius:50%; color:#c8f5ff;
+  background:linear-gradient(145deg,#4de0f5,#176cf0);
+  box-shadow:0 0 0 7px rgba(76,202,255,.07),0 0 28px rgba(47,153,255,.25);
+}
+.ai-empty-state h2 { margin-top:18px; font-size:clamp(22px,3vw,29px); }
+@media(max-width:650px) {
+  .ai-header { padding:12px 18px; gap:8px; }
+  .ai-brand { gap:10px; }
+  .ai-brand-title { gap:8px; font-size:clamp(18px,5vw,24px); letter-spacing:-.7px; }
+  .ai-pro-badge { padding:5px 8px; font-size:10px; }
+  .ai-header-tools { gap:2px; }
+  .ai-tool-button { width:34px; height:38px; font-size:23px; }
+}
