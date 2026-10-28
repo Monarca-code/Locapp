@@ -81,6 +81,7 @@ function getSource(doc) {
     id: String(doc.$id || ""),
     title: String(doc.title || "Conteúdo publicado"),
     summary: String(doc.summary || "").slice(0, 500),
+    location: String(doc.location || "").trim() || null,
     url: safeUrl,
     updatedAt: doc.updated_at
       ? String(doc.updated_at)
