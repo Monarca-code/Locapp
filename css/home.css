@@ -1855,9 +1855,9 @@ html { scroll-behavior: smooth; }
     position: absolute;
     top: calc(100% + 8px);
     left: 12px;
-    right: 12px;
+    right: auto;
     z-index: 1201;
-    width: auto;
+    width: min(270px, calc(100vw - 24px));
     max-height: 0;
     overflow: hidden;
     visibility: hidden;
