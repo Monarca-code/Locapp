@@ -77,7 +77,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  let demoMode = false;
+
+  async function loadDemoCatalog() {
+    demoMode = true;
+    renderEmpty("A carregar demonstração…", "A preparar os registos fictícios.");
+    try {
+      const response = await fetch("../data/demo-catalog.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("Não foi possível carregar o catálogo de demonstração.");
+      const data = await response.json();
+      let items = Array.isArray(data.items) ? data.items : [];
+      const q = queryInput ? queryInput.value.trim().toLocaleLowerCase("pt") : "";
+      if (q) items = items.filter(item => [item.name,item.description,item.category,item.brand,item.vendor?.name,item.vendor?.address,item.vendor?.municipality].join(" ").toLocaleLowerCase("pt").includes(q));
+      if (sortSelect && sortSelect.value === "price") items.sort((a,b) => a.price-b.price);
+      else items.sort((a,b) => a.name.localeCompare(b.name,"pt"));
+      const notice = document.getElementById("demo-catalog-notice");
+      if (notice) notice.textContent = data.notice + " Empresas: " + data.companies.length + " · Produtos: " + data.items.length + ".";
+      renderItems(items);
+      results.querySelectorAll(".catalog-product").forEach(card => {
+        const badge = document.createElement("span");
+        badge.className = "demo-data-badge";
+        badge.textContent = "FICTÍCIO · DEMO";
+        card.prepend(badge);
+      });
+    } catch (error) {
+      renderEmpty("Demonstração indisponível", error.message);
+    }
+  }
+
   async function loadProducts() {
+    if (demoMode) { await loadDemoCatalog(); return; }
     const query = queryInput ? queryInput.value.trim() : "";
     const sort = sortSelect ? sortSelect.value : "name";
     const url = new URL(endpoint);
@@ -101,6 +130,15 @@ document.addEventListener("DOMContentLoaded", () => {
     loadProducts();
   });
   if (sortSelect) sortSelect.addEventListener("change", loadProducts);
+  const demoButton = document.getElementById("show-demo-catalog");
+  if (demoButton) demoButton.addEventListener("click", loadDemoCatalog);
+  const realButton = document.getElementById("show-real-catalog");
+  if (realButton) realButton.addEventListener("click", () => {
+    demoMode = false;
+    const notice = document.getElementById("demo-catalog-notice");
+    if (notice) notice.textContent = "";
+    loadProducts();
+  });
 
   const params = new URLSearchParams(window.location.search);
   if (queryInput && params.has("q")) queryInput.value = params.get("q");
