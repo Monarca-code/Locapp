@@ -253,5 +253,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Recebe a pesquisa enviada pela página inicial através de ?q=...
+  const initialQuery = new URLSearchParams(window.location.search).get("q");
+  if (initialQuery) {
+    input.value = initialQuery.slice(0, 1000);
+    charCount.textContent = input.value.length + "/1000";
+    search(input.value);
+  }
+
   console.log("Locapp: página de pesquisa IA inicializada.");
 });
