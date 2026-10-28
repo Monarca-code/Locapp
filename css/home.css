@@ -361,3 +361,18 @@
 @media (max-width: 780px) {
   .home-page .user-account-button { width:43px; min-width:43px; height:43px; min-height:43px; }
 }
+
+
+/* Movimento consistente em toda a experiência Locapp */
+html { scroll-behavior: smooth; }
+.home-page a, .home-page button, .home-page .category-card, .home-page .feature-panel,
+.home-page .benefits-panel, .home-page .hero-card {
+  transition-timing-function: cubic-bezier(.22,1,.36,1);
+}
+.home-page .hero-content { animation: locapp-home-enter .7s cubic-bezier(.22,1,.36,1) both; }
+.home-page .hero-card { animation: locapp-home-enter .8s cubic-bezier(.22,1,.36,1) .08s both; }
+.home-page .search-bar:focus-within { box-shadow: 0 22px 65px rgba(0,0,0,.27), 0 0 0 5px rgba(88,213,245,.12); }
+@keyframes locapp-home-enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@media(prefers-reduced-motion:reduce) {
+  .home-page *, .home-page *::before, .home-page *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+}
