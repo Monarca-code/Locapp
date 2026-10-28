@@ -102,9 +102,12 @@ async function loadPublishedDocuments() {
     `${endpoint}/databases/${encodeURIComponent(databaseId)}` +
     `/collections/${encodeURIComponent(collectionId)}/documents`;
 
+  
   const query = new URLSearchParams();
-  query.set("queries[0]", 'equal("status", ["published"])');
-  query.set("queries[1]", "limit(50)");
+
+  query.append("queries[]", 'equal("status", ["published"])');
+  query.append("queries[]", "limit(50)");
+
 
   const response = await fetch(`${url}?${query.toString()}`, {
     method: "GET",
