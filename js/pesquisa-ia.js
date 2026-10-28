@@ -96,10 +96,46 @@ document.addEventListener("DOMContentLoaded", function () {
           item.appendChild(makeElement("p", "", String(source.summary)));
         }
 
-        if (source.location) {
-          item.appendChild(
-            makeElement("p", "ai-source-location", "📍 Localização: " + String(source.location))
-          );
+        const storeName = String(source.store || source.title || "").trim();
+        const storeAddress = String(source.address || source.location || "").trim();
+
+        if (source.store || source.address || source.location) {
+          const storePanel = makeElement("div", "ai-store-details");
+          storePanel.appendChild(makeElement("span", "ai-store-label", "LOJA / LOCALIZAÇÃO"));
+          storePanel.appendChild(makeElement("strong", "ai-store-name", storeName || "Loja registada"));
+          if (storeAddress) {
+            storePanel.appendChild(makeElement("p", "ai-source-location", "📍 " + storeAddress));
+          }
+
+          const hasCoordinates =
+            Number.isFinite(Number(source.latitude)) &&
+            Number.isFinite(Number(source.longitude)) &&
+            source.latitude !== null && source.longitude !== null &&
+            source.latitude !== "" && source.longitude !== "";
+
+          let mapUrl = "";
+          if (hasCoordinates) {
+            mapUrl = "https://www.openstreetmap.org/?mlat=" +
+              encodeURIComponent(String(source.latitude)) +
+              "&mlon=" + encodeURIComponent(String(source.longitude)) +
+              "#map=17/" + encodeURIComponent(String(source.latitude)) +
+              "/" + encodeURIComponent(String(source.longitude));
+          } else if (storeAddress) {
+            mapUrl = "https://www.openstreetmap.org/search?query=" +
+              encodeURIComponent([storeName, storeAddress].filter(Boolean).join(", "));
+          }
+
+          if (mapUrl) {
+            const mapLink = makeElement("a", "ai-map-link", "⌖ Ver loja no mapa");
+            mapLink.href = mapUrl;
+            mapLink.target = "_blank";
+            mapLink.rel = "noopener noreferrer";
+            storePanel.appendChild(mapLink);
+          } else {
+            storePanel.appendChild(makeElement("p", "ai-map-unavailable",
+              "O registo ainda não tem morada ou coordenadas suficientes para abrir o mapa."));
+          }
+          item.appendChild(storePanel);
         }
 
         if (source.url) {
