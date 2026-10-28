@@ -17,6 +17,8 @@
 
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/pesquisa-ia.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="../js/pesquisa-ia.js" defer></script>
 </head>
 
@@ -105,6 +107,15 @@
       serviço não exista.
     </p>
   </main>
+
+  <section id="ai-map-screen" class="ai-map-screen" aria-hidden="true" aria-label="Mapa do local selecionado">
+    <header class="ai-map-header">
+      <div class="ai-map-brand"><span class="ai-brand-mark">L</span><span>LOCAPP <small>Localização do resultado</small></span></div>
+      <button id="ai-map-close" type="button" class="ai-map-close" aria-label="Fechar mapa">✕ Fechar mapa</button>
+    </header>
+    <div id="ai-result-map" class="ai-result-map"></div>
+    <p class="ai-map-caption" id="ai-map-caption">Localização associada ao resultado.</p>
+  </section>
 
   <footer class="ai-footer">
     <a href="../index.html">LOCAPP</a>
