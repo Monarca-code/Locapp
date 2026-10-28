@@ -96,6 +96,12 @@ document.addEventListener("DOMContentLoaded", function () {
           item.appendChild(makeElement("p", "", String(source.summary)));
         }
 
+        if (source.location) {
+          item.appendChild(
+            makeElement("p", "ai-source-location", "📍 Localização: " + String(source.location))
+          );
+        }
+
         if (source.url) {
           try {
             const url = new URL(source.url);
