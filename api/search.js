@@ -175,7 +175,7 @@ query.append(
 }
 
 async function loadPublishedProducts() {
-  const endpoint = (process.env.APPWRITE_ENDPOINT || "").replace(/\\/+$/, "");
+  const endpoint = (process.env.APPWRITE_ENDPOINT || "").replace(/\/+$/, "");
   const projectId = process.env.APPWRITE_PROJECT_ID;
   const apiKey = process.env.APPWRITE_API_KEY;
   const databaseId = process.env.APPWRITE_DATABASE_ID;
