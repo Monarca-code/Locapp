@@ -483,3 +483,35 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Cartões de loja e acesso ao mapa nos resultados da pesquisa IA */
+.ai-source-item {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, rgba(17,46,80,.86), rgba(7,27,54,.72));
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.ai-source-item:hover {
+  border-color: rgba(99,184,255,.48);
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+}
+.ai-store-details {
+  display: grid; gap: 7px; margin-top: 12px; padding: 14px;
+  border: 1px solid rgba(99,184,255,.2); border-radius: 13px;
+  background: linear-gradient(120deg, rgba(28,101,146,.18), rgba(99,184,255,.045));
+}
+.ai-store-label {
+  color: var(--ai-blue); font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+}
+.ai-store-name { color: #f5fbff; font-size: 14px; }
+.ai-store-details .ai-source-location { margin: 0; font-size: 12px; }
+.ai-map-link {
+  width: fit-content; display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 4px; padding: 10px 13px;
+  border: 1px solid rgba(99,184,255,.45); border-radius: 10px;
+  color: #071b36; background: linear-gradient(135deg, #9bd7ff, #63b8ff);
+  font-size: 12px; font-weight: 800; text-decoration: none;
+  transition: transform .18s ease, filter .18s ease;
+}
+.ai-map-link:hover { transform: translateY(-1px); filter: brightness(1.08); text-decoration: none; }
+.ai-map-unavailable { margin: 0; color: var(--ai-muted); font-size: 11px; }
