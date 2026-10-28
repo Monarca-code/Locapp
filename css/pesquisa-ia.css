@@ -626,3 +626,9 @@ body.ai-map-open { overflow: hidden; }
     animation:none!important; transition:none!important; scroll-behavior:auto!important;
   }
 }
+
+.ai-brand-image { display:block; object-fit:cover; background:transparent; }
+.ai-map-brand .ai-brand-mark { flex:0 0 38px; }
+.ai-answer-body strong { color:#fff; font-weight:700; }
+.ai-answer-body em { color:#c8eaff; }
+.ai-answer-body ul { margin:10px 0 15px; }
