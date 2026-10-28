@@ -40,6 +40,21 @@ document.addEventListener("DOMContentLoaded", function () {
     results.appendChild(panel);
   }
 
+  function getReadableError(value) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (value && typeof value === "object") {
+      if (typeof value.message === "string" && value.message.trim()) return value.message.trim();
+      if (typeof value.error === "string" && value.error.trim()) return value.error.trim();
+      if (typeof value.details === "string" && value.details.trim()) return value.details.trim();
+      if (typeof value.error_description === "string" && value.error_description.trim()) return value.error_description.trim();
+      try {
+        const serialized = JSON.stringify(value);
+        if (serialized && serialized !== "{}") return serialized.slice(0, 700);
+      } catch (_) {}
+    }
+    return "O servidor devolveu um erro sem detalhes legíveis. Verifica os registos da Vercel.";
+  }
+
   function renderError(message) {
     results.replaceChildren();
 
@@ -233,10 +248,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "O serviço de pesquisa está temporariamente indisponível."
-        );
+        const detail = getReadableError(data.error || data.message || data);
+        throw new Error("HTTP " + response.status + ": " + detail);
+      }
+
+      if (!data || typeof data !== "object" || typeof data.answer !== "string") {
+        throw new Error("A API respondeu, mas não devolveu o campo 'answer'. Verifica os registos da Vercel.");
       }
 
       renderAnswer(data);
@@ -244,8 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Locapp pesquisa IA:", error);
 
       renderError(
-        error.message ||
-        "Não foi possível contactar o serviço. Verifica a ligação à Internet e tenta novamente."
+        getReadableError(error && error.message ? error.message : error)
       );
     } finally {
       submitButton.disabled = false;
