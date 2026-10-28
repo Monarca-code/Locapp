@@ -1746,6 +1746,18 @@ html { scroll-behavior: smooth; }
 .home-page .category-card.future:hover { opacity: 1; }
 
 
+/* Ícone de notificações: sino vetorial nítido em todos os ecrãs. */
+.home-page .notification-bell-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* CABEÇALHO: preservar os controlos existentes e centrar apenas a marca */
 .home-page .header-location-pill,
 .home-page .header-city,
