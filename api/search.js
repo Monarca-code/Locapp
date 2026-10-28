@@ -420,13 +420,25 @@ Devolve apenas a resposta final dirigida ao utilizador.
       }
 
       const data = await response.json();
-      const answer = (data.candidates?.[0]?.content?.parts || [])
+      const candidate = data.candidates?.[0];
+      const answer = (candidate?.content?.parts || [])
         .map((part) => part.text || "")
         .join("\n")
         .trim();
+      const webSources = (candidate?.groundingMetadata?.groundingChunks || [])
+        .map((chunk) => chunk.web || null)
+        .filter((source) => source && source.uri)
+        .filter((source, index, all) => all.findIndex(item => item.uri === source.uri) === index)
+        .slice(0, 8)
+        .map((source) => ({
+          sourceType: "web",
+          title: String(source.title || "Fonte da Web").slice(0, 200),
+          url: /^https?:\/\//i.test(source.uri) ? source.uri : null,
+          summary: "Fonte pública utilizada na pesquisa Web."
+        }));
 
       if (answer) {
-        return answer;
+        return { answer, webSources };
       }
 
       lastStatus = 502;
