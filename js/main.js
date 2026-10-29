@@ -381,7 +381,7 @@ document.addEventListener("DOMContentLoaded", function () {
         id: vendor.id || "", name: vendor.name || "Estabelecimento registado",
         type: vendor.type || item.category || "Negócio", address: vendor.address || "",
         municipality: vendor.municipality || "", province: vendor.province || "",
-        phone: vendor.phone || "", whatsapp: vendor.whatsapp || "",
+        description: vendor.description || "", phone: vendor.phone || "", whatsapp: vendor.whatsapp || "",
         latitude: Number.isFinite(vendor.latitude) ? vendor.latitude : null,
         longitude: Number.isFinite(vendor.longitude) ? vendor.longitude : null,
         imageUrl: vendor.imageUrl || item.imageUrl || "", products: [], updatedAt: item.updatedAt || ""
@@ -405,6 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let selectedBusinessCategory = "";
+  let showAllBusinesses = false;
   function renderPublishedBusinesses() {
     if (!publishedGrid) return;
     publishedGrid.replaceChildren();
@@ -432,7 +433,7 @@ document.addEventListener("DOMContentLoaded", function () {
       publishedGrid.appendChild(empty);
       return;
     }
-    visibleBusinesses.slice(0, 12).forEach(business => {
+    visibleBusinesses.slice(0, showAllBusinesses ? visibleBusinesses.length : 12).forEach(business => {
       const card = document.createElement("button");
       card.type = "button";
       card.className = "published-card published-business-card";
@@ -455,6 +456,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }, { once: true });
       publishedGrid.appendChild(card);
     });
+    if (visibleBusinesses.length > 12) {
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "published-load-more";
+      more.textContent = showAllBusinesses ? "Mostrar menos estabelecimentos" : "Ver mais estabelecimentos (" + (visibleBusinesses.length - 12) + " restantes)";
+      more.addEventListener("click", () => { showAllBusinesses = !showAllBusinesses; renderPublishedBusinesses(); });
+      publishedGrid.appendChild(more);
+    }
   }
 
   document.querySelectorAll(".category-card[data-category]").forEach(button => {
@@ -494,17 +503,28 @@ document.addEventListener("DOMContentLoaded", function () {
       const whatsapp=digits?'<div class="business-detail-row"><span>WhatsApp</span><a target="_blank" rel="noopener noreferrer" href="https://wa.me/'+escapeHtml(digits)+'">Contactar</a></div>':"";
       const coords=Number.isFinite(business.latitude)&&Number.isFinite(business.longitude)?
         '<div class="business-detail-row"><span>Coordenadas</span><span>'+business.latitude.toFixed(5)+', '+business.longitude.toFixed(5)+'</span></div>':"";
-      const products=business.products.slice(0,5).map(product=>'<li><span>'+escapeHtml(product.name)+'</span>'+
+      const renderProducts = (items) => items.map(product=>'<li><span>'+escapeHtml(product.name)+'</span>'+
         (product.price!==null?'<strong>'+new Intl.NumberFormat("pt-AO",{maximumFractionDigits:2}).format(product.price)+' '+escapeHtml(product.currency)+'</strong>':"")+'</li>').join("");
+      let showAllProducts = false;
+      const productList = () => renderProducts(showAllProducts ? business.products : business.products.slice(0, 5));
       businessDetailsPanel.hidden=false;
       businessDetailsPanel.innerHTML='<button type="button" class="business-details-close" aria-label="Fechar detalhes">✕</button>'+
         '<div class="business-details-kicker">ESTABELECIMENTO PUBLICADO</div><h2>'+escapeHtml(business.name)+'</h2>'+
         '<p class="business-details-type">'+escapeHtml(business.type)+'</p>'+
+        (business.description ? '<p class="business-full-description">'+escapeHtml(business.description)+'</p>' : '')+
         '<div class="business-detail-row"><span>Morada</span><strong>'+escapeHtml(address||"Não indicada na base de dados")+'</strong></div>'+
         phone+whatsapp+coords+'<div class="business-products-heading">Produtos publicados</div>'+
-        '<ul class="business-products-list">'+(products||'<li>Sem produtos detalhados.</li>')+'</ul>'+
+        '<ul class="business-products-list">'+(productList()||'<li>Sem produtos detalhados.</li>')+'</ul>'+
+        (business.products.length > 5 ? '<button type="button" class="business-view-products">Ver todos os '+business.products.length+' produtos</button>' : '')+
         (business.updatedAt?'<p class="business-details-updated">Dados atualizados: '+escapeHtml(new Date(business.updatedAt).toLocaleDateString("pt-AO"))+'</p>':"");
       businessDetailsPanel.querySelector(".business-details-close").addEventListener("click",()=>{businessDetailsPanel.hidden=true;});
+      const viewProductsButton = businessDetailsPanel.querySelector(".business-view-products");
+      if (viewProductsButton) viewProductsButton.addEventListener("click", () => {
+        showAllProducts = !showAllProducts;
+        const list = businessDetailsPanel.querySelector(".business-products-list");
+        if (list) list.innerHTML = productList() || "<li>Sem produtos detalhados.</li>";
+        viewProductsButton.textContent = showAllProducts ? "Mostrar menos produtos" : "Ver todos os " + business.products.length + " produtos";
+      });
     }
   }
 
