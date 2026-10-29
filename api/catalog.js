@@ -6,9 +6,7 @@ function json(res, status, payload) {
 
 function getAllowedOrigins() {
   return (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || "")
-    .split(",")
-    .map((value) => value.trim().replace(/\/+$/, ""))
-    .filter(Boolean);
+    .split(",").map((value) => value.trim().replace(/\\/+$/, "")).filter(Boolean);
 }
 
 function clean(value, max = 500) {
@@ -25,23 +23,77 @@ function safeImage(value) {
   }
 }
 
-async function appwriteGetDocument({ endpoint, databaseId, collectionId, documentId, projectId, apiKey }) {
-  const url = `${endpoint}/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(collectionId)}/documents/${encodeURIComponent(documentId)}`;
-  const response = await fetch(url, {
+async function appwriteRequest(path, { endpoint, projectId, apiKey } = {}) {
+  const response = await fetch(endpoint + path, {
     headers: {
       "X-Appwrite-Project": projectId,
       "X-Appwrite-Key": apiKey,
       "Accept": "application/json"
     },
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(12000),
     cache: "no-store"
   });
-  if (!response.ok) return null;
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    console.error("Locapp catalog TablesDB error:", response.status, path, detail.slice(0, 300));
+    throw new Error("APPWRITE_QUERY_FAILED");
+  }
   return response.json();
 }
 
+async function resolveTableId({ endpoint, projectId, apiKey, databaseId, configuredId, fallbackName }) {
+  const params = new URLSearchParams();
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  const data = await appwriteRequest(
+    "/tablesdb/" + encodeURIComponent(databaseId) + "/tables?" + params.toString(),
+    { endpoint, projectId, apiKey }
+  );
+  const tables = Array.isArray(data.tables) ? data.tables : [];
+  const configured = String(configuredId || "").trim();
+  const found = tables.find((table) =>
+    (configured && (String(table.$id) === configured || String(table.name) === configured)) ||
+    String(table.name) === fallbackName
+  );
+  return found ? String(found.$id) : null;
+}
+
+function normalizeRow(row) {
+  return { ...(row && typeof row.data === "object" ? row.data : {}), ...(row || {}) };
+}
+
+async function loadTableRows({ endpoint, projectId, apiKey, databaseId, configuredId, tableName }) {
+  const tableId = await resolveTableId({
+    endpoint, projectId, apiKey, databaseId, configuredId, fallbackName: tableName
+  });
+  if (!tableId) {
+    console.warn("Locapp catalog: tabela não encontrada:", tableName);
+    return [];
+  }
+  const params = new URLSearchParams();
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  const data = await appwriteRequest(
+    "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
+      encodeURIComponent(tableId) + "/rows?" + params.toString(),
+    { endpoint, projectId, apiKey }
+  );
+  return (Array.isArray(data.rows) ? data.rows : []).map(normalizeRow);
+}
+
+async function appwriteGetRow({ endpoint, databaseId, tableId, rowId, projectId, apiKey }) {
+  try {
+    const row = await appwriteRequest(
+      "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
+        encodeURIComponent(tableId) + "/rows/" + encodeURIComponent(rowId),
+      { endpoint, projectId, apiKey }
+    );
+    return normalizeRow(row);
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
-  const origin = clean(req.headers.origin, 500).replace(/\/+$/, "");
+  const origin = clean(req.headers.origin, 500).replace(/\\/+$/, "");
   const allowedOrigins = getAllowedOrigins();
   const host = clean(req.headers.host, 300).toLowerCase();
   const sameDeploymentOrigin = host === "locapp-ruby.vercel.app" && (!origin || origin === "https://locapp-ruby.vercel.app");
@@ -51,10 +103,7 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Accept, Content-Type");
   res.setHeader("Access-Control-Max-Age", "86400");
-
-  if (originAllowed && origin) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
+  if (originAllowed && origin) res.setHeader("Access-Control-Allow-Origin", origin);
 
   if (req.method === "OPTIONS") {
     if (!originAllowed) return json(res, 403, { error: "Origem não autorizada." });
@@ -66,75 +115,63 @@ export default async function handler(req, res) {
   }
   if (!originAllowed) return json(res, 403, { error: "Origem não autorizada." });
 
-  const endpoint = clean(process.env.APPWRITE_ENDPOINT, 300).replace(/\/+$/, "");
+  const endpoint = clean(process.env.APPWRITE_ENDPOINT, 300).replace(/\\/+$/, "");
   const projectId = clean(process.env.APPWRITE_PROJECT_ID, 200);
   const apiKey = process.env.APPWRITE_API_KEY || "";
   const databaseId = clean(process.env.APPWRITE_DATABASE_ID, 200);
-  const productsCollectionId = clean(process.env.APPWRITE_PRODUCTS_COLLECTION_ID, 200);
-  const vendorsCollectionId = clean(process.env.APPWRITE_VENDORS_COLLECTION_ID, 200);
+  const productsTableConfiguredId = clean(process.env.APPWRITE_PRODUCTS_COLLECTION_ID, 200);
+  const vendorsTableConfiguredId = clean(process.env.APPWRITE_VENDORS_COLLECTION_ID, 200);
 
-  if (![endpoint, projectId, apiKey, databaseId, productsCollectionId, vendorsCollectionId].every(Boolean)) {
-    return json(res, 500, {
-      error: "Catálogo ainda não configurado. Define as variáveis APPWRITE_PRODUCTS_COLLECTION_ID e APPWRITE_VENDORS_COLLECTION_ID na Vercel."
-    });
+  if (![endpoint, projectId, apiKey, databaseId].every(Boolean)) {
+    return json(res, 500, { error: "Catálogo ainda não configurado. Confirma as variáveis de ambiente do Appwrite na Vercel." });
   }
 
   const searchParams = new URL(req.url, "https://locapp.invalid").searchParams;
   const search = clean(searchParams.get("q"), 100).toLocaleLowerCase("pt");
   const category = clean(searchParams.get("category"), 80);
   const sort = searchParams.get("sort") === "price" ? "price" : "name";
-  const query = new URLSearchParams();
-  query.append("queries[]", JSON.stringify({ method: "equal", attribute: "status", values: ["published"] }));
-  if (category) query.append("queries[]", JSON.stringify({ method: "equal", attribute: "category", values: [category] }));
-  query.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
 
   try {
-    const url = `${endpoint}/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(productsCollectionId)}/documents?${query.toString()}`;
-    const response = await fetch(url, {
-      headers: {
-        "X-Appwrite-Project": projectId,
-        "X-Appwrite-Key": apiKey,
-        "Accept": "application/json"
-      },
-      signal: AbortSignal.timeout(12000),
-      cache: "no-store"
-    });
+    const docs = (await loadTableRows({
+      endpoint, projectId, apiKey, databaseId,
+      configuredId: productsTableConfiguredId, tableName: "products"
+    })).filter((doc) => String(doc.status || doc.publication_status || "").toLowerCase() === "published")
+      .filter((doc) => !category || clean(doc.category, 100).toLocaleLowerCase("pt") === category.toLocaleLowerCase("pt"));
 
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      console.error("Locapp catalog Appwrite error:", response.status, detail.slice(0, 300));
-      return json(res, 502, { error: "Não foi possível consultar o catálogo. Confirma os IDs e os atributos da coleção products." });
-    }
-
-    const data = await response.json();
-    const docs = Array.isArray(data.documents) ? data.documents : [];
-    const vendorIds = [...new Set(docs.map((doc) => clean(doc.vendor_id, 200)).filter(Boolean))];
-    const vendorEntries = await Promise.all(vendorIds.map(async (vendorId) => {
-      const vendor = await appwriteGetDocument({
-        endpoint, databaseId, collectionId: vendorsCollectionId, documentId: vendorId, projectId, apiKey
+    const vendorIds = [...new Set(docs.map((doc) => clean(doc.vendor_id || doc.vendorId, 200)).filter(Boolean))];
+    let vendorTableId = null;
+    if (vendorIds.length) {
+      vendorTableId = await resolveTableId({
+        endpoint, projectId, apiKey, databaseId,
+        configuredId: vendorsTableConfiguredId, fallbackName: "vendors"
       });
-      return [vendorId, vendor];
+    }
+    const vendorEntries = await Promise.all(vendorIds.map(async (vendorId) => {
+      const vendor = vendorTableId ? await appwriteGetRow({
+        endpoint, databaseId, tableId: vendorTableId, rowId: vendorId, projectId, apiKey
+      }) : null;
+      return [vendorId, vendor || {}];
     }));
     const vendors = new Map(vendorEntries);
 
     let items = docs.map((doc) => {
-      const vendor = vendors.get(clean(doc.vendor_id, 200)) || {};
-      const imageValue = Array.isArray(doc.image_urls) ? doc.image_urls[0] : doc.image_url;
+      const vendor = vendors.get(clean(doc.vendor_id || doc.vendorId, 200)) || {};
+      const imageValue = Array.isArray(doc.image_urls) ? doc.image_urls[0] : (doc.image_url || doc.image || doc.photo_url);
       const price = Number(doc.price);
       return {
-        id: clean(doc.$id, 200),
+        id: clean(doc.$id || doc.id, 200),
         name: clean(doc.name || doc.title, 160) || "Produto sem nome",
         description: clean(doc.description, 600),
         category: clean(doc.category, 100),
         brand: clean(doc.brand, 100),
-        price: Number.isFinite(price) && price >= 0 ? price : null,
+        price: doc.price !== undefined && doc.price !== null && doc.price !== "" && Number.isFinite(price) && price >= 0 ? price : null,
         currency: clean(doc.currency, 8) || "Kz",
         condition: clean(doc.condition, 50),
-        stockQuantity: Number.isFinite(Number(doc.stock_quantity)) ? Number(doc.stock_quantity) : null,
+        stockQuantity: doc.stock_quantity !== undefined && doc.stock_quantity !== null && doc.stock_quantity !== "" && Number.isFinite(Number(doc.stock_quantity)) ? Number(doc.stock_quantity) : null,
         updatedAt: clean(doc.updated_at || doc.$updatedAt, 80) || null,
         imageUrl: safeImage(imageValue),
         vendor: {
-          id: clean(vendor.$id, 200),
+          id: clean(vendor.$id || vendor.$rowId || vendor.id, 200),
           name: clean(vendor.business_name || vendor.name || vendor.title, 160) || "Vendedor registado",
           type: clean(vendor.business_type, 80),
           phone: clean(vendor.phone, 50),
