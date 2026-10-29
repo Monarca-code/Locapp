@@ -605,8 +605,9 @@ export default async function handler(req, res) {
           answer: "Encontrei estes produtos publicados na Locapp:\n" + lines.join("\n"),
           companies: [...new Map(matches.map(product => {
             const name = String(product.vendor_name || product.store_name || "").trim();
-            return [name.toLocaleLowerCase("pt"), { name }];
-          }).filter(([key, value]) => key && value.name).map(([key, value]) => [key, value])).values()],
+            const id = String(product.vendor_id || product.vendorId || "").trim();
+            return [id || name.toLocaleLowerCase("pt"), { id, name }];
+          }).filter(([key, value]) => key && value.name && value.id).map(([key, value]) => [key, value])).values()],
           sources: [],
           resultsFound: matches.length,
           productsFound: matches.length,
