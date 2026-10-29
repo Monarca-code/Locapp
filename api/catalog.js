@@ -6,7 +6,7 @@ function json(res, status, payload) {
 
 function getAllowedOrigins() {
   return (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || "")
-    .split(",").map((value) => value.trim().replace(/\\/+$/, "")).filter(Boolean);
+    .split(",").map((value) => value.trim().replace(/\/+$/, "")).filter(Boolean);
 }
 
 function clean(value, max = 500) {
@@ -93,7 +93,7 @@ async function appwriteGetRow({ endpoint, databaseId, tableId, rowId, projectId,
 }
 
 export default async function handler(req, res) {
-  const origin = clean(req.headers.origin, 500).replace(/\\/+$/, "");
+  const origin = clean(req.headers.origin, 500).replace(/\/+$/, "");
   const allowedOrigins = getAllowedOrigins();
   const host = clean(req.headers.host, 300).toLowerCase();
   const sameDeploymentOrigin = host === "locapp-ruby.vercel.app" && (!origin || origin === "https://locapp-ruby.vercel.app");
@@ -115,7 +115,7 @@ export default async function handler(req, res) {
   }
   if (!originAllowed) return json(res, 403, { error: "Origem não autorizada." });
 
-  const endpoint = clean(process.env.APPWRITE_ENDPOINT, 300).replace(/\\/+$/, "");
+  const endpoint = clean(process.env.APPWRITE_ENDPOINT, 300).replace(/\/+$/, "");
   const projectId = clean(process.env.APPWRITE_PROJECT_ID, 200);
   const apiKey = process.env.APPWRITE_API_KEY || "";
   const databaseId = clean(process.env.APPWRITE_DATABASE_ID, 200);
