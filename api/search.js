@@ -115,48 +115,9 @@ function getSource(doc) {
   };
 }
 
-async function loadPublishedDocuments() {
-  const endpoint = (process.env.APPWRITE_ENDPOINT || "").replace(/\/+$/, "");
-  const projectId = process.env.APPWRITE_PROJECT_ID;
-  const apiKey = process.env.APPWRITE_API_KEY;
-  const databaseId = process.env.APPWRITE_DATABASE_ID;
-  const collectionId = process.env.APPWRITE_CONTENTS_COLLECTION_ID;
-
-  if (!endpoint || !projectId || !apiKey || !databaseId || !collectionId) {
-    console.warn("Locapp: content collection not configured; continuing without content documents.");
-    return [];
-  }
-
-  const url =
-    `${endpoint}/databases/${encodeURIComponent(databaseId)}` +
-    `/collections/${encodeURIComponent(collectionId)}/documents`;
-
-  
-  
-const query = new URLSearchParams();
-
-// Appwrite: consultas serializadas em JSON.
-query.append(
-  "queries[]",
-  JSON.stringify({
-    method: "equal",
-    attribute: "status",
-    values: ["published"]
-  })
-);
-
-query.append(
-  "queries[]",
-  JSON.stringify({
-    method: "limit",
-    values: [50]
-  })
-);
-
-
-
-  const response = await fetch(`${url}?${query.toString()}`, {
-    method: "GET",
+async function appwriteRequest(path, { endpoint, projectId, apiKey, method = "GET" } = {}) {
+  const response = await fetch(endpoint + path, {
+    method,
     headers: {
       "X-Appwrite-Project": projectId,
       "X-Appwrite-Key": apiKey,
@@ -165,16 +126,80 @@ query.append(
     signal: AbortSignal.timeout(12000),
     cache: "no-store"
   });
-
   if (!response.ok) {
-    const errorText = await response.text().catch(() => "");
-    console.error("Appwrite query failed:", response.status, errorText.slice(0, 500));
-    throw new Error("APPWRITE_QUERY_FAILED");
+    const detail = await response.text().catch(() => "");
+    console.error("Appwrite TablesDB request failed:", response.status, path, detail.slice(0, 350));
+    const error = new Error("APPWRITE_QUERY_FAILED");
+    error.status = response.status;
+    throw error;
+  }
+  return response.json();
+}
+
+async function resolveTableId({ endpoint, projectId, apiKey, databaseId, configuredId, fallbackName }) {
+  const data = await appwriteRequest(
+    "/tablesdb/" + encodeURIComponent(databaseId) + "/tables?queries[]=" +
+      encodeURIComponent(JSON.stringify({ method: "limit", values: [100] })),
+    { endpoint, projectId, apiKey }
+  );
+  const tables = Array.isArray(data.tables) ? data.tables : [];
+  const configured = String(configuredId || "").trim();
+  const found = tables.find((table) =>
+    (configured && (String(table.$id) === configured || String(table.name) === configured)) ||
+    String(table.name) === fallbackName
+  );
+  return found ? String(found.$id) : null;
+}
+
+function normalizeRow(row) {
+  // TablesDB returns column values on the row itself. Accept wrapped data too.
+  return { ...(row && typeof row.data === "object" ? row.data : {}), ...(row || {}) };
+}
+
+async function loadTableRows({ endpoint, projectId, apiKey, databaseId, configuredId, tableName, limit = 100 }) {
+  const tableId = await resolveTableId({
+    endpoint, projectId, apiKey, databaseId,
+    configuredId, fallbackName: tableName
+  });
+  if (!tableId) {
+    console.warn("Locapp: TablesDB table not found:", tableName);
+    return [];
+  }
+  const params = new URLSearchParams();
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [limit] }));
+  const data = await appwriteRequest(
+    "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
+      encodeURIComponent(tableId) + "/rows?" + params.toString(),
+    { endpoint, projectId, apiKey }
+  );
+  return (Array.isArray(data.rows) ? data.rows : []).map(normalizeRow);
+}
+
+async function loadPublishedDocuments() {
+  const endpoint = (process.env.APPWRITE_ENDPOINT || "").replace(/\/+$/, "");
+  const projectId = process.env.APPWRITE_PROJECT_ID;
+  const apiKey = process.env.APPWRITE_API_KEY;
+  const databaseId = process.env.APPWRITE_DATABASE_ID;
+  const configuredId = process.env.APPWRITE_CONTENTS_COLLECTION_ID;
+
+  if (!endpoint || !projectId || !apiKey || !databaseId) {
+    console.warn("Locapp: Appwrite TablesDB config missing; skipping content rows.");
+    return [];
   }
 
-  const data = await response.json();
-
-  return Array.isArray(data.documents) ? data.documents : [];
+  const rows = await loadTableRows({
+    endpoint, projectId, apiKey, databaseId,
+    configuredId, tableName: "contents", limit: 100
+  });
+  return rows.filter((row) => String(row.status || "").toLowerCase() === "published")
+    .map((row) => ({
+      ...row,
+      title: row.title || "",
+      summary: row.summary || "",
+      content: row.content || "",
+      source_type: row.source_type || "conteúdo",
+      source_url: row.source_url || ""
+    }));
 }
 
 async function loadPublishedProducts() {
@@ -182,77 +207,61 @@ async function loadPublishedProducts() {
   const projectId = process.env.APPWRITE_PROJECT_ID;
   const apiKey = process.env.APPWRITE_API_KEY;
   const databaseId = process.env.APPWRITE_DATABASE_ID;
-  const collectionId = process.env.APPWRITE_PRODUCTS_COLLECTION_ID;
-  const vendorsCollectionId = process.env.APPWRITE_VENDORS_COLLECTION_ID;
+  const productsTableId = process.env.APPWRITE_PRODUCTS_COLLECTION_ID;
+  const vendorsTableId = process.env.APPWRITE_VENDORS_COLLECTION_ID;
 
-  // A pesquisa de conteúdos continua a funcionar se as coleções de produtos
-  // ainda não estiverem configuradas na Vercel.
-  if (!endpoint || !projectId || !apiKey || !databaseId || !collectionId) return [];
+  if (!endpoint || !projectId || !apiKey || !databaseId) return [];
 
-  const query = new URLSearchParams();
-  query.append("queries[]", JSON.stringify({ method: "equal", attribute: "status", values: ["published"] }));
-  query.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
-
-  const url = `${endpoint}/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(collectionId)}/documents?${query.toString()}`;
-  const response = await fetch(url, {
-    headers: {
-      "X-Appwrite-Project": projectId,
-      "X-Appwrite-Key": apiKey,
-      "Accept": "application/json"
-    },
-    signal: AbortSignal.timeout(12000),
-    cache: "no-store"
+  const rows = await loadTableRows({
+    endpoint, projectId, apiKey, databaseId,
+    configuredId: productsTableId, tableName: "products", limit: 100
   });
+  const published = rows.filter((row) => String(row.status || "").toLowerCase() === "published");
+  const vendorIds = [...new Set(published.map((row) => String(row.vendor_id || "").trim()).filter(Boolean))];
 
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    console.error("Appwrite products query failed:", response.status, detail.slice(0, 300));
-    return [];
+  const vendors = new Map();
+  if (vendorIds.length) {
+    const vendorTableId = await resolveTableId({
+      endpoint, projectId, apiKey, databaseId,
+      configuredId: vendorsTableId, fallbackName: "vendors"
+    });
+    if (vendorTableId) {
+      await Promise.all(vendorIds.map(async (vendorId) => {
+        try {
+          const vendor = await appwriteRequest(
+            "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
+              encodeURIComponent(vendorTableId) + "/rows/" + encodeURIComponent(vendorId),
+            { endpoint, projectId, apiKey }
+          );
+          vendors.set(vendorId, normalizeRow(vendor));
+        } catch (error) {
+          console.warn("Locapp: vendor row could not be loaded:", vendorId, error.message);
+        }
+      }));
+    }
   }
 
-  const data = await response.json();
-  const docs = Array.isArray(data.documents) ? data.documents : [];
-  const vendorIds = [...new Set(docs.map(doc => String(doc.vendor_id || "").trim()).filter(Boolean))];
-
-  const vendorEntries = vendorsCollectionId
-    ? await Promise.all(vendorIds.map(async (vendorId) => {
-        const vendorUrl = `${endpoint}/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(vendorsCollectionId)}/documents/${encodeURIComponent(vendorId)}`;
-        const vendorResponse = await fetch(vendorUrl, {
-          headers: {
-            "X-Appwrite-Project": projectId,
-            "X-Appwrite-Key": apiKey,
-            "Accept": "application/json"
-          },
-          signal: AbortSignal.timeout(8000),
-          cache: "no-store"
-        });
-        if (!vendorResponse.ok) return [vendorId, null];
-        return [vendorId, await vendorResponse.json()];
-      }))
-    : [];
-
-  const vendors = new Map(vendorEntries);
-  return docs.map(doc => {
-    const vendor = vendors.get(String(doc.vendor_id || "").trim()) || {};
+  return published.map((row) => {
+    const vendor = vendors.get(String(row.vendor_id || "").trim()) || {};
     return {
-      ...doc,
-      title: String(doc.name || doc.title || "Produto sem nome"),
-      summary: String(doc.description || ""),
-      content: String(doc.description || ""),
-      category: String(doc.category || ""),
+      ...row,
+      title: String(row.name || row.title || "Produto sem nome"),
+      summary: String(row.description || ""),
+      content: String(row.description || ""),
+      category: String(row.category || ""),
       location: [vendor.address, vendor.municipality, vendor.province].filter(Boolean).join(", "),
-      store_name: String(vendor.business_name || vendor.name || vendor.title || ""),
-      vendor_name: String(vendor.business_name || vendor.name || vendor.title || ""),
-      address: String(vendor.address || "").trim(),
+      store_name: String(vendor.business_name || ""),
+      vendor_name: String(vendor.business_name || ""),
+      address: String(vendor.address || ""),
       latitude: vendor.latitude ?? null,
       longitude: vendor.longitude ?? null,
-      source_url: doc.product_url || doc.source_url || "",
+      source_url: row.product_url || row.source_url || "",
       source_type: "produto",
-      brand: String(doc.brand || ""),
-      price: doc.price ?? null,
-      currency: String(doc.currency || "Kz"),
-      stock_quantity: doc.stock_quantity ?? null,
-      condition: String(doc.condition || ""),
+      brand: String(row.brand || ""),
+      price: row.price ?? null,
+      currency: String(row.currency || "Kz"),
+      stock_quantity: row.stock_quantity ?? null,
+      condition: String(row.condition || ""),
       vendor_status: String(vendor.verification_status || "")
     };
   });
