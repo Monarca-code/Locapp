@@ -31,7 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       await account.createEmailPasswordSession(email, password);
       message.textContent = "Sessão iniciada. A abrir a área de publicação…";
-      window.location.href = "publicar-produtos.html";
+      const tipo = new URLSearchParams(window.location.search).get("tipo") || "farmacia";
+      window.location.href = "painel-vendedor.html?tipo=" + encodeURIComponent(tipo);
     } catch (error) {
       message.textContent = error.message || "Não foi possível autenticar. Confirma os dados e tenta novamente.";
     } finally { submit.disabled = false; }
