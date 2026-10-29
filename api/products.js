@@ -149,7 +149,7 @@ export default async function handler(req, res) {
       delete product.created_at;
       await aw(c, rowPath(c, productsTable, id), {
         method: "PATCH",
-        body: { data: { ...product, vendor_id: userId, updated_at: new Date().toISOString() } }
+        body: { data: { ...product, vendor_id: userId } }
       });
       return json(res, 200, { message: "Produto atualizado.", id });
     }
@@ -203,8 +203,7 @@ export default async function handler(req, res) {
         data: {
           ...product,
           vendor_id: userId,
-          status: "published",
-          updated_at: new Date().toISOString()
+          status: "published"
         }
       }
     });
