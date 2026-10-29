@@ -60,3 +60,20 @@
     height: 21px;
   }
 }
+
+
+/* Paleta global Locapp: azul-marinho profundo, texto bege e destaques claros. */
+:root {
+  --navy: #041326;
+  --navy-2: #071b31;
+  --panel: #0a2038;
+  --blue: #bba783;
+  --blue-bright: #f2dfbd;
+  --beige: #f8f4ec;
+  --beige-soft: #e0d2bb;
+  --white: #f8f4ec;
+  --muted: #d0c2ac;
+  --line: rgba(224, 210, 187, .18);
+  --shadow: 0 18px 50px rgba(0, 5, 16, .34);
+}
+body { background-color: #041326; color: #e0d2bb; }
