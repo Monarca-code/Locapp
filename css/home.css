@@ -2218,3 +2218,130 @@ html { scroll-behavior: smooth; }
     z-index: 15;
   }
 }
+
+
+/* Tema aplicado de forma consistente à página inicial inteira. */
+.home-page {
+  color: #e0d2bb;
+  background: #041326;
+  --home-ink: #f8f4ec;
+  --home-muted: #e0d2bb;
+  --home-cyan: #f2dfbd;
+}
+.home-page main,
+.home-page .site-footer,
+.home-page .section,
+.home-page .categories-section,
+.home-page .published-section,
+.home-page .feature-layout {
+  background-color: #041326;
+}
+.home-page .site-header,
+.home-page .site-footer {
+  background: #031020;
+  border-color: rgba(224,210,187,.18);
+}
+.home-page .hero {
+  background: #071b31;
+  border-color: rgba(224,210,187,.16);
+}
+.home-page .hero-shade {
+  background: linear-gradient(90deg, rgba(4,19,38,.99) 0%, rgba(4,19,38,.94) 42%, rgba(4,19,38,.76) 72%, rgba(4,19,38,.62) 100%);
+}
+.home-page h1, .home-page h2, .home-page h3,
+.home-page h4, .home-page strong, .home-page label,
+.home-page .brand, .home-page .section-heading h2,
+.home-page .published-business-name, .home-page .category-card strong {
+  color: #f8f4ec;
+}
+.home-page p, .home-page li, .home-page small,
+.home-page .muted, .home-page .published-subtitle,
+.home-page .hero-content > p:not(.small-note),
+.home-page .hero-card p, .home-page .feature-panel p,
+.home-page .benefits-panel p, .home-page .check-list li,
+.home-page .site-footer, .home-page .site-footer a {
+  color: #e0d2bb;
+}
+.home-page .eyebrow,
+.home-page .hero h1 span,
+.home-page .category-icon,
+.home-page .round-icon,
+.home-page .card-link,
+.home-page .text-link,
+.home-page .main-nav a.active,
+.home-page .main-nav a:hover {
+  color: #f2dfbd;
+}
+.home-page .eyebrow,
+.home-page .trust-pill,
+.home-page .category-card,
+.home-page .feature-panel,
+.home-page .benefits-panel,
+.home-page .content-card,
+.home-page .hero-card,
+.home-page .published-card,
+.home-page .published-business-card,
+.home-page .published-state {
+  border-color: rgba(224,210,187,.19);
+  background-color: #091e35;
+}
+.home-page .category-card,
+.home-page .feature-panel,
+.home-page .benefits-panel,
+.home-page .content-card,
+.home-page .hero-card {
+  background: linear-gradient(145deg, #0a223b, #06172a);
+  box-shadow: 0 16px 38px rgba(0,5,16,.22);
+}
+.home-page .category-card:hover,
+.home-page .category-active {
+  border-color: rgba(242,223,189,.58);
+  background: linear-gradient(145deg, #172b40, #0a1d31);
+}
+.home-page .category-card small,
+.home-page .round-icon,
+.home-page .trust-pill,
+.home-page .published-badge {
+  background: rgba(224,210,187,.10);
+  color: #f2dfbd;
+}
+.home-page .btn-blue,
+.home-page .search-bar .btn {
+  background: linear-gradient(135deg, #f2dfbd, #cbb895);
+  color: #041326;
+  border-color: rgba(248,244,236,.35);
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+.home-page .btn-outline,
+.home-page .hero-actions .btn {
+  color: #f8f4ec;
+  border-color: rgba(224,210,187,.38);
+  background: rgba(4,19,38,.62);
+}
+.home-page .search-bar {
+  background: #f8f4ec;
+  border-color: rgba(224,210,187,.5);
+}
+.home-page .search-bar input { color: #17283a; }
+.home-page .search-bar input::placeholder { color: #6d665b; }
+.home-page .category-card:after { border-color: rgba(242,223,189,.13); }
+.home-page .category-active { box-shadow: inset 3px 0 0 #f2dfbd; }
+.home-page .published-load-more,
+.home-page .business-view-products {
+  color: #f2dfbd;
+  border-color: rgba(224,210,187,.32);
+  background: #0b223a;
+}
+.home-page .map-screen {
+  background: #031020;
+}
+.home-page .map-screen::before {
+  background: linear-gradient(90deg, rgba(1,8,19,.82) 0%, rgba(2,12,27,.46) 18%, rgba(3,15,31,.12) 36%, transparent 52%);
+}
+.home-page a:focus-visible,
+.home-page button:focus-visible,
+.home-page input:focus-visible,
+.home-page textarea:focus-visible {
+  outline: 2px solid #f2dfbd;
+  outline-offset: 3px;
+}
