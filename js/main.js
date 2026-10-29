@@ -86,14 +86,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     L.marker(initialPosition)
       .addTo(map)
-      .bindPopup("Locapp — zona inicial: Aviação, Luanda");
+      .bindPopup("Locapp — Luanda, Angola");
 
     return map;
   }
 
   // O mapa da página inicial é criado ao carregar a página.
   if (homeMapElement) {
-    homeMap = createMap(homeMapElement, 15);
+    homeMap = createMap(homeMapElement, 12);
   }
 
   // =========================================
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "hidden";
 
     if (!fullscreenMap) {
-      fullscreenMap = createMap(fullscreenMapElement, 15);
+      fullscreenMap = createMap(fullscreenMapElement, 12);
     }
 
     // O Leaflet precisa de recalcular as dimensões após a animação.
@@ -484,7 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if(!mapScreen||!fullscreenMapElement) return;
     mapScreen.classList.add("is-active"); mapScreen.setAttribute("aria-hidden","false");
     document.body.classList.add("map-screen-open"); document.body.style.overflow="hidden";
-    if(!fullscreenMap) fullscreenMap=createMap(fullscreenMapElement,14);
+    if(!fullscreenMap) fullscreenMap=createMap(fullscreenMapElement,12);
     if(fullscreenMap) window.setTimeout(()=>{
       fullscreenMap.invalidateSize(true);
       const hasCoordinates=Number.isFinite(business.latitude)&&Number.isFinite(business.longitude)&&
