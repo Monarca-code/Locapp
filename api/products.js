@@ -58,6 +58,20 @@ async function aw(c, path, { method = "GET", jwt, body } = {}) {
   return data;
 }
 
+async function resolveDatabase(c) {
+  const params = new URLSearchParams();
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  const result = await aw(c, "/tablesdb?" + params.toString());
+  const databases = Array.isArray(result.databases) ? result.databases : [];
+  const found = databases.find(d => String(d.$id) === c.database || String(d.name) === c.database);
+  if (!found) {
+    const error = new Error("A base de dados configurada não foi encontrada no Appwrite.");
+    error.status = 404;
+    throw error;
+  }
+  c.database = String(found.$id);
+}
+
 async function resolveTable(c, configuredId, fallbackName) {
   const params = new URLSearchParams();
   params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
@@ -121,6 +135,7 @@ export default async function handler(req, res) {
 
   try {
     const c = config();
+    await resolveDatabase(c);
     const user = await aw(c, "/account", { jwt });
     const userId = clean(user.$id, 200);
     if (!userId) return json(res, 401, { error: "Sessão inválida. Entra novamente." });
