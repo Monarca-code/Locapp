@@ -602,7 +602,11 @@ export default async function handler(req, res) {
           return "• " + name + " — " + vendor + " — " + price + " — " + stock;
         });
         return sendJson(res, 200, {
-          answer: "Encontrei estes produtos publicados na Locapp:\n" + lines.join("\n") + "\n\nQueres ver o perfil da empresa que vende algum destes produtos? Diz-me o nome da empresa e ajudo-te a encontrá-la na Locapp.",
+          answer: "Encontrei estes produtos publicados na Locapp:\n" + lines.join("\n"),
+          companies: [...new Map(matches.map(product => {
+            const name = String(product.vendor_name || product.store_name || "").trim();
+            return [name.toLocaleLowerCase("pt"), { name }];
+          }).filter(([key, value]) => key && value.name).map(([key, value]) => [key, value])).values()],
           sources: [],
           resultsFound: matches.length,
           productsFound: matches.length,
