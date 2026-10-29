@@ -166,7 +166,7 @@ async function loadTableRows({ endpoint, projectId, apiKey, databaseId, configur
     return [];
   }
   const params = new URLSearchParams();
-  params.append("queries[]", JSON.stringify({ method: "limit", values: [limit] }));
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [500] }));
   const data = await appwriteRequest(
     "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
       encodeURIComponent(tableId) + "/rows?" + params.toString(),
@@ -404,7 +404,7 @@ Devolve apenas a resposta final dirigida ao utilizador.
           ],
           generationConfig: {
             temperature: 0.2,
-            maxOutputTokens: 2200
+            maxOutputTokens: 900
           }
         }),
         signal: AbortSignal.timeout(12000),
@@ -576,22 +576,59 @@ export default async function handler(req, res) {
     ]);
     const allRecords = [...products, ...documents];
     const relevantDocuments = rankDocuments(allRecords, question);
-    const productIntent = /produto|pre[cç]o|comprar|loja|marca|modelo|compar|mais barato|stock|dispon[ií]vel|vale a pena|qual [eé] melhor/i.test(question);
+    const normalizedQuestion = normalizeText(question);
+    const productIntent = /produto|seringa|seringas|pre[cç]o|comprar|loja|marca|modelo|compar|mais barato|stock|dispon[ií]vel|disponibilidade|tem\\b|existe\\b|vendem|venda/i.test(normalizedQuestion);
 
-    // A IA recebe os registos mais relevantes da Locapp e pode pesquisar
-    // informação pública adicional através do Google Search grounding.
+    // Para perguntas sobre produtos, consultar primeiro e exclusivamente o catálogo real.
+    // Não usar fontes Web genéricas para contrariar ou substituir produtos publicados.
+    if (productIntent) {
+      const terms = normalizedQuestion.split(/[^a-z0-9]+/)
+        .filter(word => word.length > 2 && !new Set(["produto","produtos","preco","precos","quero","saber","tem","existe","onde","qual","quais","uma","uns","das","dos","com","para","em","na","no","locapp","vendem","venda","disponivel","disponibilidade","stock","comprar"]).has(word));
+      const matches = products.filter(product => {
+        const searchable = normalizeText([product.title, product.category, product.summary, product.content, product.brand, product.store_name, product.vendor_name].filter(Boolean).join(" "));
+        return terms.length > 0 && terms.some(term => searchable.includes(term));
+      }).slice(0, 8);
+
+      const money = value => Number(value).toLocaleString("pt-PT", {maximumFractionDigits: 2}) + " Kz";
+      if (matches.length) {
+        const lines = matches.map(product => {
+          const name = String(product.title || "Produto").trim();
+          const vendor = String(product.vendor_name || product.store_name || "Vendedor registado").trim();
+          const price = product.price !== undefined && product.price !== null && product.price !== "" && Number.isFinite(Number(product.price))
+            ? money(product.price) : "preço não indicado";
+          const stock = product.stock_quantity !== undefined && product.stock_quantity !== null && product.stock_quantity !== ""
+            ? (Number(product.stock_quantity) > 0 ? "stock registado: " + Number(product.stock_quantity) : "sem stock registado")
+            : "stock não indicado";
+          return "• " + name + " — " + vendor + " — " + price + " — " + stock;
+        });
+        return sendJson(res, 200, {
+          answer: "Encontrei estes produtos publicados na Locapp:\\n" + lines.join("\\n"),
+          sources: [],
+          resultsFound: matches.length,
+          productsFound: matches.length,
+          analysisMode: "catalog"
+        });
+      }
+      return sendJson(res, 200, {
+        answer: "Não encontrei um produto correspondente entre os registos publicados que consegui consultar na Locapp. Isto não confirma que o produto não exista; verifica o nome publicado, o estado da publicação e o stock no painel do vendedor.",
+        sources: [],
+        resultsFound: 0,
+        productsFound: 0,
+        analysisMode: "catalog"
+      });
+    }
+
     const documentsForAI = relevantDocuments.length > 0
-      ? relevantDocuments.slice(0, 12)
-      : allRecords.slice(0, productIntent ? 8 : 5);
-
+      ? relevantDocuments.slice(0, 8)
+      : allRecords.slice(0, 4);
     const aiResult = await askGemini(question, documentsForAI);
 
     return sendJson(res, 200, {
       answer: aiResult.answer,
-      sources: [...documentsForAI.map(getSource), ...(aiResult.webSources || [])],
+      sources: (aiResult.webSources || []).slice(0, 2),
       resultsFound: relevantDocuments.length,
       productsFound: relevantDocuments.filter(doc => doc.source_type === "produto").length,
-      analysisMode: productIntent ? "product-analysis" : "general-research"
+      analysisMode: "general-research"
     });
 
   } catch (error) {
