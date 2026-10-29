@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.classList.add("ai-map-open");
 
     const hasCoordinates = Number.isFinite(details.lat) && Number.isFinite(details.lon);
-    const fallback = [-8.8383, 13.2344];
+    const fallback = [-8.8383, 13.2344]; // Luanda, Angola
 
     function showMap(lat, lon, zoom) {
       if (typeof L === "undefined") {
