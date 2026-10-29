@@ -431,6 +431,23 @@ Devolve apenas a resposta final dirigida ao utilizador.
           lowerError.includes("resource_exhausted") ||
           lowerError.includes("too many requests");
 
+        // Quando o Google confirma que a quota gratuita do projeto esgotou,
+        // trocar de modelo não resolve o limite do projeto. Parar já evita
+        // pedidos redundantes, reduz latência e conserva a quota disponível.
+        const projectQuotaExhausted =
+          response.status === 429 &&
+          (
+            lowerError.includes("free_tier_requests") ||
+            lowerError.includes("free tier") ||
+            lowerError.includes("check your plan and billing details") ||
+            /quota exceeded.*limit:\\s*\\d+/s.test(lowerError)
+          );
+
+        if (projectQuotaExhausted) {
+          lastStatus = 429;
+          break;
+        }
+
         if (
           [429, 500, 502, 503, 504, 404].includes(response.status) ||
           (response.status === 403 && quotaOrRateLimit)
