@@ -128,6 +128,7 @@ export default async function handler(req, res) {
 
   const searchParams = new URL(req.url, "https://locapp.invalid").searchParams;
   const search = clean(searchParams.get("q"), 100).toLocaleLowerCase("pt");
+  const requestedVendorId = clean(searchParams.get("vendor"), 200);
   const category = clean(searchParams.get("category"), 80);
   const sort = searchParams.get("sort") === "price" ? "price" : "name";
 
@@ -188,6 +189,10 @@ export default async function handler(req, res) {
       };
     });
 
+    if (requestedVendorId) {
+      items = items.filter((item) => item.vendor.id === requestedVendorId);
+    }
+
     if (search) {
       items = items.filter((item) => [
         item.name, item.description, item.category, item.brand,
@@ -204,7 +209,8 @@ export default async function handler(req, res) {
       return a.name.localeCompare(b.name, "pt");
     });
 
-    return json(res, 200, { items, count: items.length, updatedAt: new Date().toISOString() });
+    const vendor = requestedVendorId && items.length ? items[0].vendor : null;
+    return json(res, 200, { items, count: items.length, vendor, updatedAt: new Date().toISOString() });
   } catch (error) {
     console.error("Locapp catalog error:", error.message);
     return json(res, 503, { error: "O catálogo está temporariamente indisponível. Tenta novamente mais tarde." });
