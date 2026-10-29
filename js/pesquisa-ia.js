@@ -232,10 +232,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const companyButtons = makeElement("div", "ai-company-buttons");
       companies.forEach(function (company) {
         const name = String(company && company.name || "").trim();
-        if (!name) return;
+        const id = String(company && company.id || "").trim();
+        if (!name || !id) return;
         const link = makeElement("a", "ai-company-button", "Ver empresa · " + name);
-        link.href = "../pages/produtos.html?q=" + encodeURIComponent(name);
-        link.setAttribute("aria-label", "Ver produtos publicados por " + name);
+        link.href = "../pages/empresa.html?id=" + encodeURIComponent(id);
+        link.setAttribute("aria-label", "Abrir perfil de " + name);
         companyButtons.appendChild(link);
       });
       companySection.appendChild(companyButtons);
