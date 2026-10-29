@@ -274,3 +274,78 @@ body.map-screen-open {
   color: #b85a00; font-size: 10px; font-weight: 800; letter-spacing: .7px;
 }
 .catalog-product .catalog-vendor { font-weight: 700; }
+
+
+/* LOCAPP — acabamento da paleta azul-marinho e bege nas páginas internas */
+.toolbar input[type="search"],
+.toolbar select,
+.stack-form input,
+.stack-form select,
+.ai-search-box textarea,
+.stack-form textarea,
+.stack-form input::placeholder,
+.toolbar input::placeholder {
+  background: #102a45;
+  color: var(--beige);
+  border-color: rgba(224,210,187,.28);
+}
+.toolbar input::placeholder,
+.stack-form input::placeholder {
+  color: var(--muted);
+}
+.toolbar input:focus,
+.toolbar select:focus,
+.stack-form input:focus,
+.stack-form select:focus,
+.ai-search-box textarea:focus {
+  outline: 2px solid var(--blue-bright);
+  outline-offset: 2px;
+  border-color: var(--blue-bright);
+}
+.map-panel,
+.map-screen,
+.map-screen-controls,
+.map-screen-header {
+  background-color: var(--navy);
+}
+.map-screen-header {
+  background: rgba(4,19,38,.96);
+  border-bottom-color: var(--line);
+}
+.map-screen-brand,
+.map-screen-brand small {
+  color: var(--beige);
+}
+.map-brand-icon,
+.map-screen-controls button {
+  background: linear-gradient(135deg,var(--blue-bright),var(--beige-soft));
+  color: var(--navy);
+}
+.map-close-button {
+  background: var(--panel);
+  border-color: var(--line);
+  color: var(--beige);
+}
+.map-close-button:hover {
+  background: var(--blue-bright);
+  border-color: var(--blue-bright);
+  color: var(--navy);
+}
+.map-screen-controls {
+  border-color: var(--line);
+  color: var(--beige);
+  box-shadow: 0 12px 32px rgba(0,5,16,.4);
+}
+.demo-catalog-banner {
+  border-color: rgba(224,210,187,.35);
+}
+.demo-data-badge {
+  background: rgba(242,223,189,.10);
+  border-color: rgba(224,210,187,.32);
+  color: var(--beige);
+}
+.comparison-summary {
+  background: rgba(242,223,189,.07);
+  border-color: var(--line);
+  color: var(--beige-soft);
+}
