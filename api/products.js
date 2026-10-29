@@ -37,10 +37,11 @@ function config() {
 async function aw(c, path, { method = "GET", jwt, body } = {}) {
   const headers = {
     "X-Appwrite-Project": c.project,
-    "X-Appwrite-Key": c.key,
     "Accept": "application/json"
   };
+  // Appwrite JWT and API key are separate auth modes: use only one per request.
   if (jwt) headers["X-Appwrite-JWT"] = jwt;
+  else headers["X-Appwrite-Key"] = c.key;
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const response = await fetch(c.endpoint + path, {
     method,
