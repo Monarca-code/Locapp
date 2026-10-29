@@ -12,7 +12,7 @@ function allowedOrigin(req, res) {
     (!origin || origin === "https://locapp-ruby.vercel.app");
   res.setHeader("Vary", "Origin");
   res.setHeader("Cache-Control", "no-store");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Appwrite-JWT");
   res.setHeader("Access-Control-Max-Age", "86400");
   if ((allowed.includes(origin) || sameDeploymentOrigin) && origin) {
@@ -103,7 +103,7 @@ function validateProduct(body) {
     condition: clean(body.condition, 50) || "novo",
     stock_quantity: Number.isFinite(Number(body.stock_quantity)) ? Math.max(0, Number(body.stock_quantity)) : 1,
     image_urls: Array.isArray(body.image_urls) ? body.image_urls.map(v => clean(v, 1000)).filter(Boolean).slice(0, 5) : [],
-    status: "published",
+    status: body.status === "draft" ? "draft" : "published",
     created_at: new Date().toISOString()
   };
 }
@@ -111,8 +111,8 @@ function validateProduct(body) {
 export default async function handler(req, res) {
   if (!allowedOrigin(req, res)) return json(res, 403, { error: "Origem não autorizada." });
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (!["GET", "POST", "PATCH"].includes(req.method)) {
-    res.setHeader("Allow", "GET, POST, PATCH, OPTIONS");
+  if (!["GET", "POST", "PATCH", "DELETE"].includes(req.method)) {
+    res.setHeader("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
     return json(res, 405, { error: "Método não permitido." });
   }
 
@@ -136,6 +136,7 @@ export default async function handler(req, res) {
       return json(res, 200, { items: (data.rows || []).map(normalizeRow) });
     }
 
+    if (req.method === "DELETE") { const id=clean(new URL(req.url,"https://locapp.invalid").searchParams.get("id"),36); if(!id)return json(res,400,{error:"Falta o ID do produto."}); const existing=normalizeRow(await aw(c,rowPath(c,productsTable,id))); if(clean(existing.vendor_id,200)!==userId)return json(res,403,{error:"Só podes eliminar os teus próprios produtos."}); await aw(c,rowPath(c,productsTable,id),{method:"DELETE"}); return json(res,200,{message:"Produto eliminado.",id}); }
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const product = validateProduct(body);
 
