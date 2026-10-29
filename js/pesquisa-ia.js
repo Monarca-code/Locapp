@@ -226,111 +226,72 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const sources = Array.isArray(data.sources) ? data.sources : [];
 
+    // As fontes internas da Locapp ficam recolhidas para manter a resposta limpa.
+    // Mostra no máximo três referências curtas; a IA continua a usar todos os dados no backend.
     if (sources.length > 0) {
-      const sourceSection = makeElement("section", "ai-sources");
-      sourceSection.appendChild(makeElement("h3", "", "Fontes consultadas"));
+      const sourceSection = makeElement("details", "ai-sources ai-sources-collapsed");
+      const sourceSummary = makeElement(
+        "summary",
+        "ai-sources-summary",
+        "Ver fontes (" + sources.length + ")"
+      );
+      sourceSection.appendChild(sourceSummary);
 
-      sources.forEach(function (source, index) {
-        const item = makeElement("div", "ai-source-item");
+      const sourceList = makeElement("div", "ai-sources-list");
+      sources.slice(0, 3).forEach(function (source, index) {
+        const item = makeElement("div", "ai-source-item ai-source-compact");
         const title = String(source.title || "Fonte " + (index + 1));
-
         item.appendChild(makeElement("strong", "", title));
 
+        const details = [];
         if (source.sourceType === "produto") {
-          item.appendChild(makeElement("span", "ai-product-badge", "PRODUTO DO CATÁLOGO"));
-          const facts = makeElement("div", "ai-product-facts");
-          if (source.brand) facts.appendChild(makeElement("span", "", "Marca: " + source.brand));
           if (source.price !== null && source.price !== undefined) {
-            const priceText = new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 2 }).format(Number(source.price)) + " " + String(source.currency || "Kz");
-            facts.appendChild(makeElement("strong", "", "Preço registado: " + priceText));
-          } else {
-            facts.appendChild(makeElement("span", "", "Preço não indicado"));
+            details.push(
+              new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 2 }).format(Number(source.price)) +
+              " " + String(source.currency || "Kz")
+            );
           }
-          if (source.category) facts.appendChild(makeElement("span", "", "Categoria: " + source.category));
-          if (source.stockQuantity !== null && source.stockQuantity !== undefined) {
-            facts.appendChild(makeElement("span", "", "Quantidade registada: " + source.stockQuantity));
-          }
-          if (source.vendorStatus) facts.appendChild(makeElement("span", "", "Estado do vendedor: " + source.vendorStatus));
-          item.appendChild(facts);
+          if (source.brand) details.push(String(source.brand));
+          if (source.store || source.vendor) details.push(String(source.store || source.vendor));
+          if (source.category) details.push(String(source.category));
+        } else if (source.sourceType === "web") {
+          details.push("Fonte pública");
+        } else {
+          details.push("Conteúdo da Locapp");
         }
 
-        if (source.summary) {
-          item.appendChild(makeElement("p", "", String(source.summary)));
-        }
-
-        const storeName = String(source.store || source.title || "").trim();
-        const storeAddress = String(source.address || source.location || "").trim();
-
-        if (source.store || source.address || source.location) {
-          const storePanel = makeElement("div", "ai-store-details");
-          storePanel.appendChild(makeElement("span", "ai-store-label", "LOJA / LOCALIZAÇÃO"));
-          storePanel.appendChild(makeElement("strong", "ai-store-name", storeName || "Loja registada"));
-          if (storeAddress) {
-            storePanel.appendChild(makeElement("p", "ai-source-location", "📍 " + storeAddress));
-          }
-
-          const hasCoordinates =
-            Number.isFinite(Number(source.latitude)) &&
-            Number.isFinite(Number(source.longitude)) &&
-            source.latitude !== null && source.longitude !== null &&
-            source.latitude !== "" && source.longitude !== "";
-
-          if (hasCoordinates || storeAddress) {
-            const mapLink = makeElement("button", "ai-map-link", "⌖ Ver loja no mapa");
-            mapLink.type = "button";
-            mapLink.addEventListener("click", function () {
-              openResultMap({
-                name: storeName || "Localização do resultado",
-                address: storeAddress,
-                lat: hasCoordinates ? Number(source.latitude) : NaN,
-                lon: hasCoordinates ? Number(source.longitude) : NaN
-              }, mapLink);
-            });
-            storePanel.appendChild(mapLink);
-          } else {
-            storePanel.appendChild(makeElement("p", "ai-map-unavailable",
-              "O registo ainda não tem morada ou coordenadas suficientes para abrir o mapa."));
-          }
-          item.appendChild(storePanel);
+        if (details.length) {
+          item.appendChild(makeElement("p", "ai-source-meta", details.join(" · ")));
         }
 
         if (source.url) {
           try {
             const url = new URL(source.url);
-
             if (url.protocol === "https:" || url.protocol === "http:") {
-              const link = makeElement("a", "ai-source-link", "Consultar fonte ↗");
+              const link = makeElement("a", "ai-source-link", "Abrir fonte ↗");
               link.href = url.href;
               link.target = "_blank";
               link.rel = "noopener noreferrer";
               item.appendChild(link);
             }
-          } catch {
-            // Ignora endereços inválidos.
+          } catch (_) {
+            // Ignora URLs inválidos.
           }
         }
 
-        if (source.updatedAt) {
-          item.appendChild(
-            makeElement(
-              "p",
-              "",
-              "Atualização registada: " + String(source.updatedAt)
-            )
-          );
-        }
-
-        sourceSection.appendChild(item);
+        sourceList.appendChild(item);
       });
 
+      if (sources.length > 3) {
+        sourceList.appendChild(makeElement(
+          "p",
+          "ai-sources-more",
+          "Mais " + (sources.length - 3) + " fontes foram usadas na análise e estão ocultas para manter a tela simples."
+        ));
+      }
+
+      sourceSection.appendChild(sourceList);
       article.appendChild(sourceSection);
-    } else {
-      const note = makeElement(
-        "p",
-        "ai-disclaimer",
-        "Não foram devolvidas fontes específicas para esta pesquisa. Confirma a informação antes de tomar decisões."
-      );
-      article.appendChild(note);
     }
 
     results.appendChild(article);
