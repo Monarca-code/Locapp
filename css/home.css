@@ -2000,3 +2000,64 @@ html { scroll-behavior: smooth; }
     font-size: 11px;
   }
 }
+
+
+/* Menu lateral móvel: altera apenas a navegação, preservando o conteúdo e os catálogos. */
+@media (max-width: 780px) {
+  .home-page .main-nav {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 4000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 7px;
+    width: min(82vw, 292px);
+    height: 100dvh;
+    margin: 0;
+    padding: max(92px, calc(env(safe-area-inset-top) + 76px)) 16px 24px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(129,190,227,.2);
+    background: linear-gradient(165deg, #071d34 0%, #041427 100%);
+    box-shadow: 18px 0 42px rgba(0, 7, 18, .42);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform .24s ease, visibility .24s ease;
+  }
+  .home-page .main-nav.open {
+    display: flex;
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .home-page .main-nav a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 46px;
+    height: auto;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #d5e1ec;
+    font-size: .92rem;
+    font-weight: 600;
+    white-space: normal;
+  }
+  .home-page .main-nav a:hover {
+    color: #f2dfc2;
+    background: rgba(116,151,181,.13);
+  }
+  .home-page .main-nav a.active {
+    color: #f2dfc2;
+    border-color: rgba(242,223,194,.13);
+    background: linear-gradient(100deg, rgba(116,151,181,.28), rgba(116,151,181,.1));
+    box-shadow: inset 3px 0 0 #f2dfc2;
+  }
+  .home-page .main-nav a.active::after {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page .main-nav { transition: none; }
+}
