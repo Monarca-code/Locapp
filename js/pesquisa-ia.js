@@ -224,6 +224,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     article.appendChild(body);
 
+    // Botões das empresas reais associadas aos produtos encontrados.
+    const companies = Array.isArray(data.companies) ? data.companies : [];
+    if (companies.length) {
+      const companySection = makeElement("div", "ai-company-results");
+      companySection.appendChild(makeElement("p", "ai-company-results-title", "Empresas que publicaram estes produtos"));
+      const companyButtons = makeElement("div", "ai-company-buttons");
+      companies.forEach(function (company) {
+        const name = String(company && company.name || "").trim();
+        if (!name) return;
+        const link = makeElement("a", "ai-company-button", "Ver empresa · " + name);
+        link.href = "../pages/produtos.html?q=" + encodeURIComponent(name);
+        link.setAttribute("aria-label", "Ver produtos publicados por " + name);
+        companyButtons.appendChild(link);
+      });
+      companySection.appendChild(companyButtons);
+      article.appendChild(companySection);
+    }
+
     const sources = Array.isArray(data.sources) ? data.sources : [];
 
     // As fontes internas da Locapp ficam recolhidas para manter a resposta limpa.
