@@ -1148,3 +1148,54 @@ body.ai-map-open { overflow: hidden; }
   color: var(--muted, #d0c2ac);
   font-size: 10px !important;
 }
+
+
+/* Botões de empresas ligados aos resultados reais da pesquisa IA. */
+.ai-company-results {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(224, 210, 187, .16);
+}
+.ai-company-results-title {
+  margin: 0 0 10px;
+  color: var(--text, #f5efe5);
+  font-size: 13px;
+  font-weight: 700;
+}
+.ai-company-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.ai-company-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(22, 139, 224, .5);
+  border-radius: 12px;
+  background: rgba(22, 139, 224, .12);
+  color: var(--text, #f5efe5);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.ai-company-button::before {
+  content: "🏪";
+}
+.ai-company-button:hover,
+.ai-company-button:focus-visible {
+  background: rgba(22, 139, 224, .23);
+  border-color: #168be0;
+  transform: translateY(-1px);
+  outline: none;
+}
+@media (max-width: 520px) {
+  .ai-company-buttons { flex-direction: column; }
+  .ai-company-button { width: 100%; box-sizing: border-box; }
+}
