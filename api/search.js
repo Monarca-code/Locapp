@@ -602,7 +602,7 @@ export default async function handler(req, res) {
           return "• " + name + " — " + vendor + " — " + price + " — " + stock;
         });
         return sendJson(res, 200, {
-          answer: "Encontrei estes produtos publicados na Locapp:\\n" + lines.join("\\n"),
+          answer: "Encontrei estes produtos publicados na Locapp:\n" + lines.join("\n"),
           sources: [],
           resultsFound: matches.length,
           productsFound: matches.length,
