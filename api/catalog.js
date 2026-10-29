@@ -43,7 +43,7 @@ async function appwriteRequest(path, { endpoint, projectId, apiKey } = {}) {
 
 async function resolveTableId({ endpoint, projectId, apiKey, databaseId, configuredId, fallbackName }) {
   const params = new URLSearchParams();
-  params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [500] }));
   const data = await appwriteRequest(
     "/tablesdb/" + encodeURIComponent(databaseId) + "/tables?" + params.toString(),
     { endpoint, projectId, apiKey }
