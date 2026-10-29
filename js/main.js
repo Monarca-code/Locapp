@@ -511,13 +511,22 @@ document.addEventListener("DOMContentLoaded", function () {
       businessDetailsPanel.innerHTML='<button type="button" class="business-details-close" aria-label="Fechar detalhes">✕</button>'+
         '<div class="business-details-kicker">ESTABELECIMENTO PUBLICADO</div><h2>'+escapeHtml(business.name)+'</h2>'+
         '<p class="business-details-type">'+escapeHtml(business.type)+'</p>'+
+        '<button type="button" class="business-view-company">Ver mais sobre a empresa</button>'+
+        '<div class="business-more-info" hidden>'+
         (business.description ? '<p class="business-full-description">'+escapeHtml(business.description)+'</p>' : '')+
         '<div class="business-detail-row"><span>Morada</span><strong>'+escapeHtml(address||"Não indicada na base de dados")+'</strong></div>'+
-        phone+whatsapp+coords+'<div class="business-products-heading">Produtos publicados</div>'+
+        phone+whatsapp+coords+'</div><div class="business-products-heading">Produtos publicados</div>'+
         '<ul class="business-products-list">'+(productList()||'<li>Sem produtos detalhados.</li>')+'</ul>'+
         (business.products.length > 5 ? '<button type="button" class="business-view-products">Ver todos os '+business.products.length+' produtos</button>' : '')+
         (business.updatedAt?'<p class="business-details-updated">Dados atualizados: '+escapeHtml(new Date(business.updatedAt).toLocaleDateString("pt-AO"))+'</p>':"");
       businessDetailsPanel.querySelector(".business-details-close").addEventListener("click",()=>{businessDetailsPanel.hidden=true;});
+      const viewCompanyButton = businessDetailsPanel.querySelector(".business-view-company");
+      const moreCompanyInfo = businessDetailsPanel.querySelector(".business-more-info");
+      if (viewCompanyButton && moreCompanyInfo) viewCompanyButton.addEventListener("click", () => {
+        const opening = moreCompanyInfo.hidden;
+        moreCompanyInfo.hidden = !opening;
+        viewCompanyButton.textContent = opening ? "Ocultar detalhes da empresa" : "Ver mais sobre a empresa";
+      });
       const viewProductsButton = businessDetailsPanel.querySelector(".business-view-products");
       if (viewProductsButton) viewProductsButton.addEventListener("click", () => {
         showAllProducts = !showAllProducts;
