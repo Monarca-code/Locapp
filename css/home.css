@@ -2197,3 +2197,24 @@ html { scroll-behavior: smooth; }
     transform: translateX(0);
   }
 }
+
+
+/* Correção de camadas: o cabeçalho e os botões ficam sempre acessíveis. */
+.home-page .site-header {
+  position: relative;
+  z-index: 4100;
+}
+@media (min-width: 781px) {
+  .home-page .main-nav {
+    z-index: 15;
+  }
+}
+@media (max-width: 780px) {
+  .home-page .main-nav {
+    top: 82px;
+    bottom: 0;
+    height: calc(100dvh - 82px);
+    padding: 16px 16px 24px;
+    z-index: 15;
+  }
+}
