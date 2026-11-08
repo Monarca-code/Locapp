@@ -240,11 +240,38 @@
     <p class="ai-map-caption" id="ai-map-caption">Localização associada ao resultado.</p>
   </section>
 
-  <footer class="site-footer">
-    <p>Conectando pessoas aos serviços que importam.</p>
-    <div><a href="pages/sobre.html">Sobre</a><a href="pages/sobre.html#contacto">Contacto</a><a href="pages/sobre.html#privacidade">Privacidade</a></div>
+  <footer class="site-footer locapp-footer">
+    <div class="footer-top">
+      <a class="brand footer-brand" href="index.html"><span class="brand-pin">●</span>Locapp</a>
+      <p>Conectando pessoas aos serviços que importam.</p>
+    </div>
+    <div class="footer-groups">
+      <details class="footer-group">
+        <summary>Explorar</summary>
+        <a href="pages/farmacias.html">Farmácias</a>
+        <a href="pages/produtos.html">Produtos e preços</a>
+        <a href="pages/pesquisa-ia.html">Pesquisa IA</a>
+      </details>
+      <details class="footer-group">
+        <summary>Para empresas</summary>
+        <a href="pages/entrar.html">Aceder à conta</a>
+        <a href="pages/publicar-produtos.html">Publicar produtos</a>
+      </details>
+      <details class="footer-group">
+        <summary>Locapp</summary>
+        <a href="pages/sobre.html">Sobre nós</a>
+        <a href="pages/sobre.html#contacto">Contacto</a>
+      </details>
+      <details class="footer-group">
+        <summary>Ajuda e informação</summary>
+        <a href="pages/sobre.html#privacidade">Privacidade</a>
+        <a href="pages/sobre.html#termos">Termos e condições</a>
+      </details>
+    </div>
+    <div class="footer-bottom"><span>© <span id="footer-year"></span> Locapp</span><span>Luanda, Angola</span></div>
   </footer>
 
+  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
