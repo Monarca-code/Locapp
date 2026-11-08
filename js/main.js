@@ -622,7 +622,7 @@ document.addEventListener("DOMContentLoaded", function () {
           homeProductsGrid.appendChild(empty);
           return;
         }
-        items.slice(0, Math.min(8, items.length)).forEach(item => {
+        items.forEach(item => {
           const card = document.createElement("article");
           card.className = "home-product-card";
           if (item.imageUrl) {
@@ -646,16 +646,14 @@ document.addEventListener("DOMContentLoaded", function () {
           price.textContent = homePrice(item.price, item.currency);
           const seller = document.createElement("p");
           seller.textContent = item.vendor?.name || "Vendedor registado";
-          const location = document.createElement("small");
-          location.textContent = [item.vendor?.municipality, item.vendor?.province].filter(Boolean).join(", ") || "Localização não indicada";
-          body.append(name, price, seller, location);
+          body.append(name, price, seller);
           card.appendChild(body);
           homeProductsGrid.appendChild(card);
         });
       })
       .catch(error => {
         console.error("Locapp produtos da página inicial:", error);
-        homeProductsGrid.innerHTML = '<div class="published-state">Não foi possível carregar os produtos publicados.</div>';
+        homeProductsGrid.replaceChildren();
       });
   }
 
