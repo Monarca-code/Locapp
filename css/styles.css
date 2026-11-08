@@ -5,7 +5,9 @@
 /* =========================================
    BOTÃO DE PERFIL DO UTILIZADOR
    ========================================= */
-
+.ai-map-brand{
+  display: none;
+}
 .user-profile-button {
   width: 44px;
   height: 44px;

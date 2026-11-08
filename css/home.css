@@ -2345,3 +2345,152 @@ html { scroll-behavior: smooth; }
   outline: 2px solid #f2dfbd;
   outline-offset: 3px;
 }
+
+
+/* FIX VISUAL 2026-11-05 — cabeçalho, menu lateral e pesquisa responsiva */
+.home-page .site-header {
+  overflow: visible !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: auto;
+}
+.home-page .brand,
+.home-page .brand-wordmark {
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.08;
+}
+.home-page .brand-wordmark {
+  align-items: flex-start;
+  overflow: visible;
+}
+.home-page .mobile-header-controls,
+.home-page .mobile-account-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.home-page .mobile-header-controls { order: 2; }
+.home-page .mobile-account-controls { order: 3; }
+.home-page .mobile-account-controls .header-notifications,
+.home-page .mobile-account-controls .user-account-button {
+  flex: 0 0 auto;
+}
+@media (min-width: 781px) {
+  .home-page .site-header {
+    min-height: 98px;
+    padding-block: 14px;
+  }
+  .home-page .main-nav {
+    position: fixed !important;
+    top: 112px !important;
+    bottom: 18px !important;
+    left: 16px !important;
+    width: 224px !important;
+    height: auto !important;
+    max-height: calc(100dvh - 130px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    transform: none !important;
+    visibility: visible !important;
+    z-index: 4000 !important;
+  }
+  .home-page main,
+  .home-page > .site-footer {
+    margin-left: 252px !important;
+  }
+  .home-page .hero-content {
+    max-width: 900px;
+  }
+}
+@media (max-width: 780px) {
+  .home-page .site-header {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    min-height: 76px !important;
+    padding: 10px 14px !important;
+  }
+  .home-page .brand {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 5px;
+  }
+  .home-page .brand-pin {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+  .home-page .brand-wordmark { font-size: 1.15rem; }
+  .home-page .brand-wordmark small { font-size: .55rem; }
+  .home-page .mobile-header-controls {
+    order: 0;
+    flex: 0 0 auto;
+  }
+  .home-page .mobile-account-controls {
+    order: 2;
+    flex: 0 0 auto;
+    gap: 7px;
+  }
+  .home-page .mobile-account-controls .header-notifications {
+    width: 36px;
+    height: 36px;
+  }
+  .home-page .mobile-account-controls .user-account-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+  .home-page .main-nav {
+    position: fixed !important;
+    top: 76px !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: min(82vw, 300px) !important;
+    height: calc(100dvh - 76px) !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    transform: translateX(-105%) !important;
+    visibility: hidden !important;
+    z-index: 4000 !important;
+  }
+  .home-page .main-nav.open {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+  }
+  .home-page main,
+  .home-page > .site-footer {
+    margin-left: 0 !important;
+  }
+  .home-page .hero {
+    min-height: auto !important;
+    padding: 44px 18px 38px !important;
+  }
+  .home-page .hero h1 {
+    font-size: clamp(2.45rem, 10.5vw, 3.4rem) !important;
+    line-height: 1.02 !important;
+  }
+  .home-page .search-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+    gap: 7px !important;
+  }
+  .home-page .search-bar input {
+    width: 100%;
+    min-height: 48px;
+  }
+  .home-page .search-bar .btn {
+    width: 100% !important;
+    min-height: 48px !important;
+  }
+  .home-page .trust-pills {
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+}
