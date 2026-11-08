@@ -404,8 +404,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return '<div class="published-image published-image-placeholder" aria-hidden="true">⌖</div>';
   }
 
-  let selectedBusinessCategory = "";
-  let publishedOrder = "recent";
+  function shuffleItems(items) {\n    const shuffled = [...items];\n    for (let i = shuffled.length - 1; i > 0; i--) {\n      const j = Math.floor(Math.random() * (i + 1));\n      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];\n    }\n    return shuffled;\n  }\n\n  let selectedBusinessCategory = "";
+  let publishedOrder = "random";
   function renderPublishedBusinesses() {
     if (!publishedGrid) return;
     publishedGrid.replaceChildren();
@@ -573,7 +573,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response=await fetch("/api/catalog?sort=name",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"});
       const result=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(result.error||"Não foi possível carregar o catálogo.");
-      publishedBusinesses=compactBusinessList(Array.isArray(result.items)?result.items:[]);
+      publishedBusinesses=shuffleItems(compactBusinessList(Array.isArray(result.items)?result.items:[]));
       renderPublishedBusinesses();
     } catch(error) {
       console.error("Locapp: erro ao carregar estabelecimentos:",error);
@@ -582,6 +582,75 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   if(refreshPublishedButton) refreshPublishedButton.addEventListener("click",loadPublishedContent);
   loadPublishedContent();
+
+
+  // Produtos publicados na página inicial: pelo menos cinco, em ordem aleatória.
+  const homeProductsGrid = document.getElementById("home-products-grid");
+  if (homeProductsGrid) {
+    const shuffledProducts = (items) => {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    };
+    const homePrice = (price, currency) => price === null || price === undefined
+      ? "Preço não indicado"
+      : new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 2 }).format(price) + " " + (currency || "Kz");
+    fetch("/api/catalog", { headers: { Accept: "application/json" }, cache: "no-store" })
+      .then(response => response.json().then(data => {
+        if (!response.ok) throw new Error(data.error || "Catálogo indisponível");
+        return data;
+      }))
+      .then(data => {
+        const items = shuffledProducts(Array.isArray(data.items) ? data.items : []);
+        homeProductsGrid.replaceChildren();
+        if (!items.length) {
+          const empty = document.createElement("div");
+          empty.className = "published-state";
+          empty.textContent = "Ainda não existem produtos publicados.";
+          homeProductsGrid.appendChild(empty);
+          return;
+        }
+        items.slice(0, Math.min(8, items.length)).forEach(item => {
+          const card = document.createElement("article");
+          card.className = "home-product-card";
+          if (item.imageUrl) {
+            const image = document.createElement("img");
+            image.src = item.imageUrl;
+            image.alt = item.name || "Produto publicado";
+            image.loading = "lazy";
+            image.referrerPolicy = "no-referrer";
+            card.appendChild(image);
+          } else {
+            const placeholder = document.createElement("div");
+            placeholder.className = "home-product-placeholder";
+            placeholder.textContent = "▤";
+            card.appendChild(placeholder);
+          }
+          const body = document.createElement("div");
+          body.className = "home-product-body";
+          const name = document.createElement("h3");
+          name.textContent = item.name || "Produto publicado";
+          const price = document.createElement("strong");
+          price.textContent = homePrice(item.price, item.currency);
+          const seller = document.createElement("p");
+          seller.textContent = item.vendor?.name || "Vendedor registado";
+          const location = document.createElement("small");
+          location.textContent = [item.vendor?.municipality, item.vendor?.province].filter(Boolean).join(", ") || "Localização não indicada";
+          body.append(name, price, seller, location);
+          card.appendChild(body);
+          homeProductsGrid.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error("Locapp produtos da página inicial:", error);
+        homeProductsGrid.innerHTML = '<div class="published-state">Não foi possível carregar os produtos publicados.</div>';
+      });
+  }
+
+
 
   console.log("Locapp: aplicação inicializada.");
 });
