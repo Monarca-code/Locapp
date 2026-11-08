@@ -2494,3 +2494,30 @@ html { scroll-behavior: smooth; }
     gap: 7px;
   }
 }
+
+
+/* Menu móvel: manter o painel ancorado ao viewport durante o scroll da página. */
+@media (max-width: 780px) {
+  .home-page .site-header {
+    transform: none !important;
+    filter: none !important;
+    perspective: none !important;
+    overflow: visible !important;
+  }
+  .home-page .main-nav,
+  .home-page .main-nav.open {
+    position: fixed !important;
+    top: 76px !important;
+    right: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: calc(100dvh - 76px) !important;
+    max-height: none !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    z-index: 5000 !important;
+  }
+}
