@@ -110,9 +110,19 @@
       <div class="section-heading">
         <div>
           <h2 id="published-title">Estabelecimentos perto de si</h2>
-          <p class="published-subtitle">Negócios com produtos publicados na Locapp. Toque num cartão para ver a localização e os dados registados.</p>
+          <p class="published-subtitle">Explore empresas com produtos publicados na Locapp. Deslize para ver mais e abra um cartão para consultar os detalhes.</p>
         </div>
         <button class="published-see-all" id="published-refresh" type="button">Atualizar <span aria-hidden="true">↻</span></button>
+      </div>
+      <div class="published-carousel-toolbar">
+        <div class="published-tabs" role="group" aria-label="Ordenar estabelecimentos">
+          <button type="button" class="published-tab is-active" data-published-order="recent">Mais recentes</button>
+          <button type="button" class="published-tab" data-published-order="older">Mais antigos</button>
+        </div>
+        <div class="published-arrows">
+          <button type="button" id="published-prev" aria-label="Ver anteriores">‹</button>
+          <button type="button" id="published-next" aria-label="Ver seguintes">›</button>
+        </div>
       </div>
       <div id="published-grid" class="published-grid" aria-live="polite">
         <div class="published-state"><span class="published-loader" aria-hidden="true"></span><span>A carregar conteúdos publicados…</span></div>
