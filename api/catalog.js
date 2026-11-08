@@ -71,6 +71,9 @@ async function loadTableRows({ endpoint, projectId, apiKey, databaseId, configur
   }
   const params = new URLSearchParams();
   params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  // Carrega até 500 registos para não deixar publicações reais mais recentes
+  // fora do catálogo quando os registos de demonstração ocupam os primeiros 100.
+  params.set("queries[]", JSON.stringify({ method: "limit", values: [500] }));
   const data = await appwriteRequest(
     "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" +
       encodeURIComponent(tableId) + "/rows?" + params.toString(),
@@ -137,6 +140,8 @@ export default async function handler(req, res) {
       endpoint, projectId, apiKey, databaseId,
       configuredId: productsTableConfiguredId, tableName: "products"
     })).filter((doc) => String(doc.status || doc.publication_status || "").toLowerCase() === "published")
+      // Registos fictícios continuam na base para testes internos, mas não aparecem no catálogo público.
+      .filter((doc) => clean(doc.vendor_id || doc.vendorId, 200) !== "locapp-demo-vendor")
       .filter((doc) => !category || clean(doc.category, 100).toLocaleLowerCase("pt") === category.toLocaleLowerCase("pt"));
 
     const vendorIds = [...new Set(docs.map((doc) => clean(doc.vendor_id || doc.vendorId, 200)).filter(Boolean))];
