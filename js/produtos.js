@@ -54,25 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
       price.className = "comparison-price";
       price.textContent = money(item.price, item.currency);
       card.appendChild(price);
-      if (item.description) {
-        const description = document.createElement("p");
-        description.textContent = item.description;
-        card.appendChild(description);
-      }
       const seller = document.createElement("p");
       seller.className = "catalog-vendor";
-      seller.textContent = "🏪 " + item.vendor.name;
+      seller.textContent = item.vendor?.name || "Empresa";
       card.appendChild(seller);
-      const locationText = [item.vendor.address, item.vendor.municipality, item.vendor.province].filter(Boolean).join(", ");
-      const location = document.createElement("p");
-      location.className = "catalog-location";
-      location.textContent = locationText ? "📍 " + locationText : "📍 Localização ainda não indicada pelo vendedor";
-      card.appendChild(location);
-      if (item.updatedAt) {
-        const updated = document.createElement("small");
-        updated.textContent = "Atualizado: " + item.updatedAt;
-        card.appendChild(updated);
-      }
       results.appendChild(card);
     });
   }
