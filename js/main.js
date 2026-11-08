@@ -405,15 +405,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let selectedBusinessCategory = "";
-  let showAllBusinesses = false;
+  let publishedOrder = "recent";
   function renderPublishedBusinesses() {
     if (!publishedGrid) return;
     publishedGrid.replaceChildren();
     const visibleBusinesses = selectedBusinessCategory
       ? publishedBusinesses.filter(business => {
           const terms = [business.type, ...business.products.map(product => product.category)]
-            .join(" ").toLocaleLowerCase("pt").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const selected = selectedBusinessCategory.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            .join(" ").toLocaleLowerCase("pt").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+          const selected = selectedBusinessCategory.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
           return terms.includes(selected) ||
             (selected === "farmacia" && /farmac|pharma/.test(terms)) ||
             (selected === "restaurante" && /restaur|comida|aliment/.test(terms)) ||
@@ -423,7 +423,14 @@ document.addEventListener("DOMContentLoaded", function () {
             (selected === "atm" && /atm|multicaixa|caixa automatico/.test(terms)) ||
             (selected === "radar" && /radar/.test(terms));
         })
-      : publishedBusinesses;
+      : [...publishedBusinesses];
+
+    visibleBusinesses.sort((a, b) => {
+      const dateA = Date.parse(a.updatedAt || "") || 0;
+      const dateB = Date.parse(b.updatedAt || "") || 0;
+      return publishedOrder === "recent" ? dateB - dateA : dateA - dateB;
+    });
+
     if (!visibleBusinesses.length) {
       const empty = document.createElement("div");
       empty.className = "published-state";
@@ -433,17 +440,22 @@ document.addEventListener("DOMContentLoaded", function () {
       publishedGrid.appendChild(empty);
       return;
     }
-    visibleBusinesses.slice(0, showAllBusinesses ? visibleBusinesses.length : 12).forEach(business => {
+
+    visibleBusinesses.forEach(business => {
       const card = document.createElement("button");
       card.type = "button";
       card.className = "published-card published-business-card";
       card.setAttribute("aria-label", "Ver " + business.name + " no mapa");
       const place = [business.municipality, business.province].filter(Boolean).join(", ");
+      const updated = business.updatedAt
+        ? new Date(business.updatedAt).toLocaleDateString("pt-AO")
+        : "Data não indicada";
       card.innerHTML = businessImage(business) +
         '<span class="published-card-body"><span class="published-category">' + escapeHtml(business.type) + '</span>' +
         '<strong class="published-business-name">' + escapeHtml(business.name) + '</strong>' +
         '<span class="published-vendor published-business-location">' + escapeHtml(place || business.address || "Localização não indicada") + '</span>' +
         '<span class="published-business-count">' + business.products.length + (business.products.length === 1 ? " produto publicado" : " produtos publicados") + '</span>' +
+        '<span class="published-business-date">Atualizado: ' + escapeHtml(updated) + '</span>' +
         '</span><span class="published-business-arrow" aria-hidden="true">↗</span>';
       card.addEventListener("click", () => openBusinessOnMap(business));
       const image = card.querySelector("img");
@@ -456,15 +468,31 @@ document.addEventListener("DOMContentLoaded", function () {
       }, { once: true });
       publishedGrid.appendChild(card);
     });
-    if (visibleBusinesses.length > 12) {
-      const more = document.createElement("button");
-      more.type = "button";
-      more.className = "published-load-more";
-      more.textContent = showAllBusinesses ? "Mostrar menos estabelecimentos" : "Ver mais estabelecimentos (" + (visibleBusinesses.length - 12) + " restantes)";
-      more.addEventListener("click", () => { showAllBusinesses = !showAllBusinesses; renderPublishedBusinesses(); });
-      publishedGrid.appendChild(more);
-    }
+    publishedGrid.scrollTo({ left: 0, behavior: "auto" });
   }
+
+  document.querySelectorAll("[data-published-order]").forEach(button => {
+    button.addEventListener("click", () => {
+      publishedOrder = button.dataset.publishedOrder === "older" ? "older" : "recent";
+      document.querySelectorAll("[data-published-order]").forEach(tab => {
+        const active = tab === button;
+        tab.classList.toggle("is-active", active);
+        tab.setAttribute("aria-pressed", String(active));
+      });
+      renderPublishedBusinesses();
+    });
+  });
+
+  const publishedPrev = document.getElementById("published-prev");
+  const publishedNext = document.getElementById("published-next");
+  const scrollPublished = direction => {
+    if (!publishedGrid) return;
+    const card = publishedGrid.querySelector(".published-card");
+    const distance = card ? card.getBoundingClientRect().width + 12 : publishedGrid.clientWidth * 0.8;
+    publishedGrid.scrollBy({ left: direction * distance, behavior: "smooth" });
+  };
+  if (publishedPrev) publishedPrev.addEventListener("click", () => scrollPublished(-1));
+  if (publishedNext) publishedNext.addEventListener("click", () => scrollPublished(1));
 
   document.querySelectorAll(".category-card[data-category]").forEach(button => {
     button.addEventListener("click", () => {
