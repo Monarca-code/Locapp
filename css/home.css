@@ -2495,29 +2495,44 @@ html { scroll-behavior: smooth; }
   }
 }
 
-
-/* Menu móvel: manter o painel ancorado ao viewport durante o scroll da página. */
+/* CORREÇÃO: menu mobile fixo durante a rolagem */
 @media (max-width: 780px) {
+
   .home-page .site-header {
-    transform: none !important;
-    filter: none !important;
-    perspective: none !important;
-    overflow: visible !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 4100 !important;
   }
-  .home-page .main-nav,
-  .home-page .main-nav.open {
+
+  .home-page .main-nav {
     position: fixed !important;
+
     top: 76px !important;
+    left: 0 !important;
     right: auto !important;
     bottom: 0 !important;
-    left: 0 !important;
-    height: calc(100dvh - 76px) !important;
+
+    width: min(82vw, 300px) !important;
+    height: auto !important;
     max-height: none !important;
+
     margin: 0 !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    z-index: 5000 !important;
+
+    transform: translateX(-105%) !important;
+    visibility: hidden !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+
+    z-index: 4200 !important;
+  }
+
+  .home-page .main-nav.open {
+    position: fixed !important;
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 }
