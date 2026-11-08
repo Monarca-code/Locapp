@@ -412,8 +412,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const visibleBusinesses = selectedBusinessCategory
       ? publishedBusinesses.filter(business => {
           const terms = [business.type, ...business.products.map(product => product.category)]
-            .join(" ").toLocaleLowerCase("pt").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-          const selected = selectedBusinessCategory.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+            .join(" ").toLocaleLowerCase("pt").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const selected = selectedBusinessCategory.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           return terms.includes(selected) ||
             (selected === "farmacia" && /farmac|pharma/.test(terms)) ||
             (selected === "restaurante" && /restaur|comida|aliment/.test(terms)) ||
