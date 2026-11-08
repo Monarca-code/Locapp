@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currency: item.currency || "Kz", imageUrl: item.imageUrl || ""
       });
       if (!business.imageUrl && item.imageUrl) business.imageUrl = item.imageUrl;
-      if (!business.updatedAt && item.updatedAt) business.updatedAt = item.updatedAt;
+      if (item.updatedAt && (!business.updatedAt || (Date.parse(item.updatedAt) || 0) > (Date.parse(business.updatedAt) || 0))) business.updatedAt = item.updatedAt;
     });
     return [...businesses.values()].sort((a,b) => a.name.localeCompare(b.name,"pt"));
   }
