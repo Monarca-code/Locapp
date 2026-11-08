@@ -404,7 +404,16 @@ document.addEventListener("DOMContentLoaded", function () {
     return '<div class="published-image published-image-placeholder" aria-hidden="true">⌖</div>';
   }
 
-  function shuffleItems(items) {\n    const shuffled = [...items];\n    for (let i = shuffled.length - 1; i > 0; i--) {\n      const j = Math.floor(Math.random() * (i + 1));\n      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];\n    }\n    return shuffled;\n  }\n\n  let selectedBusinessCategory = "";
+  function shuffleItems(items) {
+    const shuffled = [...items];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  let selectedBusinessCategory = "";
   let publishedOrder = "random";
   function renderPublishedBusinesses() {
     if (!publishedGrid) return;
